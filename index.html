@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>7th Sea — Compendio</title>
+<title>7th Sea — Scheda PG</title>
 
 <style>
 :root{
@@ -3801,15 +3801,7 @@ async function syncToCloud() {
   if (r.error) console.error('Cloud sync error:', r.error);
 }
 
-// ── OVERRIDE save() PER AUTO-SYNC ──
-var _origSave = save;
-function save() {
-  _origSave();
-  if (OV.cloudEnabled && OV.pgId) {
-    clearTimeout(OV.saveTimer);
-    OV.saveTimer = setTimeout(syncToCloud, 2000);
-  }
-}
+
 
 // ── START OVERLAY ──
 (async function() {
