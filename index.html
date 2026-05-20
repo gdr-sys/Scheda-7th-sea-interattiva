@@ -3890,12 +3890,16 @@ async function ovConfirmDelete() {
 }
 
 // ── TORNA ALLA LISTA ──
-function ovShow() {
-  if (OV.cloudEnabled) syncToCloud();
-  window._appInited = false; // reset so next pg loads cleanly
+async function ovShow() {
+  if (OV.cloudEnabled) {
+    // Sync immediatamente prima di tornare alla lista
+    // assicura che nome e dati siano aggiornati nel DB
+    await syncToCloud();
+  }
+  window._appInited = false;
   document.getElementById('overlay').style.display = 'flex';
   document.getElementById('btn-back-pgs').style.display = 'none';
-  ovShowPgList();
+  await ovShowPgList();
 }
 
 // ── CLOUD SYNC ──
