@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>7th Sea — Scheda PG</title>
+<title>7th Sea — Compendio</title>
 
 <style>
 :root{
@@ -1061,7 +1061,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     <div style="display:flex;flex-direction:column;gap:8px" id="modo-btns">
       <div class="modo-opt" id="modo-creazione" onclick="setModo('creazione')" style="padding:12px;border-radius:8px;border:2px solid var(--border);cursor:pointer;transition:all 0.2s">
         <div style="font-family:var(--font-title);font-weight:700;font-size:0.85rem;letter-spacing:1px">CREAZIONE PG</div>
-        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px">Max 3 pallini per abilità · Vantaggi solo-creazione disponibili · 1 Background + 15 punti abilità + 5 punti vantaggio</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px">Max 3 pallini per abilità · Vantaggi solo-creazione disponibili · 2 Background + 10 punti abilità + 5 punti vantaggio</div>
       </div>
       <div class="modo-opt" id="modo-libera" onclick="setModo('libera')" style="padding:12px;border-radius:8px;border:2px solid var(--border);cursor:pointer;transition:all 0.2s">
         <div style="font-family:var(--font-title);font-weight:700;font-size:0.85rem;letter-spacing:1px">CREAZIONE LIBERA</div>
@@ -1135,9 +1135,9 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   <div class="card">
     <div class="sec-header">INFO</div>
     <div style="font-size:0.82rem;color:var(--text-muted);line-height:1.8">
-      <div> <b>7th Sea scheda personaggio</b></div>
+      <div> <b>7th Sea Compendio</b></div>
       <div>Manuali: 7th Sea 2&ordf; Ed. &middot; Navigavia</div>
-      <div style="margin-top:6px;font-size:0.72rem">I dati vengono salvati automaticamente nel cloud (Supabase) se hai effettuato l'accesso con Google. Offline: solo nel browser locale.</div>
+      <div style="margin-top:6px;font-size:0.72rem">I dati vengono salvati nel browser (localStorage). Usa Esporta per backup o per trasferire su altri dispositivi.</div>
     </div>
   </div>
 
@@ -2096,6 +2096,7 @@ function toggleTheme(){D.theme=D.theme==='dark'?'light':'dark';applyTheme();docu
 // ===== MODALITÀ SCHEDA =====
 function setModo(m){
   D.modo=m;
+  if(m==='creazione') D.p._bgApplicati=0; // reset contatore al cambio modalità
   syncModo();
   renderAbilita();
   save();
@@ -3515,6 +3516,14 @@ function clearBgSel(){
 
 function applyBackground(){
   if(!_bgSelected)return;
+  // In modalità creazione: max 2 background
+  if(isCreazione()){
+    var bgCount=(D.p._bgApplicati||0);
+    if(bgCount>=2){
+      alert('In Modalità Creazione puoi applicare al massimo 2 Background.');
+      return;
+    }
+  }
   var b=_bgSelected;
   // Add abilità: set each to 1 if currently 0
   var changed=[];
@@ -3560,6 +3569,11 @@ function applyBackground(){
   if(added.length)msgs.push('Vantaggi aggiunti: '+added.join(', '));
   if(changed.length)msgs.push('Abilità portate a 1: '+changed.join(', '));
   if(!added.length&&!changed.length)msgs.push('Tutto già presente!');
+  // Incrementa contatore background in modalità creazione
+  if(isCreazione()){
+    D.p._bgApplicati=(D.p._bgApplicati||0)+1;
+    msgs.push('Background applicati in creazione: '+D.p._bgApplicati+'/2');
+  }
   alert(msgs.join('\n'));
 }
 
