@@ -488,6 +488,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       <button class="str-type-btn" id="stb-babayaga"    onclick="selectStrType('babayaga')">Tocco di Baba Yaga</button>
       <button class="str-type-btn" id="stb-custom"      onclick="selectStrType('custom')">Altra</button>
     </div>
+    <div id="str-multi-hint" style="display:none;font-size:0.72rem;color:var(--text-muted);font-family:var(--font-title);margin-top:6px;margin-bottom:2px"></div>
     <div class="field-row"><span class="field-label">Nome / Tipo</span><input class="field-input" id="str-tipo" oninput="saveStr()" placeholder="—"></div>
     <div class="field-row"><span class="field-label">Nazione</span><input class="field-input" id="str-nazione" oninput="saveStr()" placeholder="—"></div>
     <textarea class="field-input" id="str-note" rows="2" oninput="saveStr()" placeholder="Note generali…" style="margin-top:8px"></textarea>
@@ -2096,9 +2097,17 @@ function toggleTheme(){D.theme=D.theme==='dark'?'light':'dark';applyTheme();docu
 // ===== MODALITÀ SCHEDA =====
 function setModo(m){
   D.modo=m;
-  if(m==='creazione') D.p._bgApplicati=0; // reset contatore al cambio modalità
+  if(m==='creazione'){
+    D.p._bgApplicati=0;
+    // In creazione: tieni solo la prima stregoneria attiva
+    if(D.str.tipiAttivi&&D.str.tipiAttivi.length>1){
+      D.str.tipiAttivi=[D.str.tipiAttivi[0]];
+    }
+  }
   syncModo();
   renderAbilita();
+  renderStrButtons();
+  renderStrSections();
   save();
 }
 function syncModo(){
@@ -2410,16 +2419,60 @@ function chgStrCnt(w,d){if(w==='a')D.str.cntA=Math.max(0,(D.str.cntA||0)+d);else
 // ===== STREGONERIA JS =====
 
 function selectStrType(type){
-  D.str.tipoRef=type;
-  const names={hexenwerk:'Hexenwerk',glamour:'Glamour (Cavalieri di Avalon)',porte:'Porté',sorte:'Sorte',matushki:'Dar Matushki',sanderis:'Sanderis',arcanance:'Arcanance',cantus:'Cantus Oceanico',estirpe:'Estirpe',risveglio:'Magia del Risveglio',mouo:'Mŏʼuo',sognatore:'Sentiero del Sognatore',babayaga:'Tocco di Baba Yaga',custom:''};
-  const naz={hexenwerk:'Eisen',glamour:'Avalon',porte:'Porté',sorte:'Vodacce',matushki:'Ussura',sanderis:'Sarmatia (Commonwealth)',arcanance:'Alloide / Navigavia',cantus:'Navigavia',estirpe:'Baisella',risveglio:'Reiettorato (Navigavia)',mouo:'Tŏlanua',sognatore:'Navigavia',babayaga:'Rutenia (Navigavia)',custom:''};
-  const t=document.getElementById('str-tipo');if(t&&!t.value)t.value=names[type]||'';
-  const n=document.getElementById('str-nazione');if(n&&!n.value)n.value=naz[type]||'';
-  document.querySelectorAll('.str-type-btn').forEach(b=>b.classList.remove('active'));
-  const ab=document.getElementById('stb-'+type);if(ab)ab.classList.add('active');
-  document.querySelectorAll('.str-section').forEach(s=>s.style.display='none');
-  const sec=document.getElementById('str-sec-'+type);if(sec)sec.style.display='block';
+  var libera=!isCreazione(); // libera o gioco = multi-stregoneria
+
+  if(libera){
+    // Toggle: se già attiva, disattiva; altrimenti attiva
+    if(!D.str.tipiAttivi)D.str.tipiAttivi=[];
+    var idx=D.str.tipiAttivi.indexOf(type);
+    if(idx>=0){
+      D.str.tipiAttivi.splice(idx,1); // rimuovi
+    } else {
+      D.str.tipiAttivi.push(type); // aggiungi
+    }
+    // Aggiorna tipoRef con il primo attivo (per compatibilità)
+    D.str.tipoRef=D.str.tipiAttivi[0]||'';
+    renderStrButtons();
+    renderStrSections();
+  } else {
+    // Modalità creazione: una sola stregoneria
+    D.str.tipoRef=type;
+    D.str.tipiAttivi=[type];
+    const names={hexenwerk:'Hexenwerk',glamour:'Glamour (Cavalieri di Avalon)',porte:'Porté',sorte:'Sorte',matushki:'Dar Matushki',sanderis:'Sanderis',arcanance:'Arcanance',cantus:'Cantus Oceanico',estirpe:'Estirpe',risveglio:'Magia del Risveglio',mouo:'Mŏʼuo',sognatore:'Sentiero del Sognatore',babayaga:'Tocco di Baba Yaga',custom:''};
+    const naz={hexenwerk:'Eisen',glamour:'Avalon',porte:'Porté',sorte:'Vodacce',matushki:'Ussura',sanderis:'Sarmatia (Commonwealth)',arcanance:'Alloide / Navigavia',cantus:'Navigavia',estirpe:'Baisella',risveglio:'Reiettorato (Navigavia)',mouo:'Tŏlanua',sognatore:'Navigavia',babayaga:'Rutenia (Navigavia)',custom:''};
+    const t=document.getElementById('str-tipo');if(t&&!t.value)t.value=names[type]||'';
+    const n=document.getElementById('str-nazione');if(n&&!n.value)n.value=naz[type]||'';
+    renderStrButtons();
+    renderStrSections();
+  }
   saveStr();
+}
+
+function renderStrButtons(){
+  var attivi=D.str.tipiAttivi||[D.str.tipoRef];
+  document.querySelectorAll('.str-type-btn').forEach(function(b){
+    var type=b.id.replace('stb-','');
+    var isActive=attivi.indexOf(type)>=0;
+    b.classList.toggle('active',isActive);
+  });
+  // Update hint text
+  var hint=document.getElementById('str-multi-hint');
+  if(hint){
+    if(!isCreazione()&&attivi.length>0){
+      hint.style.display='block';
+      hint.textContent=attivi.length>1?'Clicca un tipo attivo per rimuoverlo · '+attivi.length+' stregonerie attive':'Clicca per aggiungere altre stregonerie';
+    } else {
+      hint.style.display='none';
+    }
+  }
+}
+
+function renderStrSections(){
+  var attivi=D.str.tipiAttivi||[D.str.tipoRef];
+  document.querySelectorAll('.str-section').forEach(function(s){
+    var type=s.id.replace('str-sec-','');
+    s.style.display=attivi.indexOf(type)>=0?'block':'none';
+  });
 }
 
 // HEXENWERK
@@ -3115,11 +3168,10 @@ function loadStr(){
   const rn=document.getElementById('risveglio-note');if(rn)rn.value=s.risvNote||'';
   const st=document.getElementById('sognatore-totem');if(st)st.value=s.sognatoreTotem||'';
   updStrCnt();
-  if(s.tipoRef){
-    document.querySelectorAll('.str-section').forEach(x=>x.style.display='none');
-    const sec=document.getElementById('str-sec-'+s.tipoRef);if(sec)sec.style.display='block';
-    const ab=document.getElementById('stb-'+s.tipoRef);if(ab)ab.classList.add('active');
-  }
+  // Compatibilità: migra tipoRef -> tipiAttivi se necessario
+  if(!s.tipiAttivi&&s.tipoRef){s.tipiAttivi=[s.tipoRef];}
+  renderStrButtons();
+  renderStrSections();
   renderHexenwerk();renderGlamour();renderPorte();renderMatushki();renderSanderis();renderSorte();
   renderArcanance();renderCantus();renderEstirpe();renderRisveglio();renderMouo();renderSognatore();renderBabaYaga();
   renderArcanance();renderCantus();renderEstirpe();renderRisveglio();renderMouo();renderSognatore();renderBabaYaga();
