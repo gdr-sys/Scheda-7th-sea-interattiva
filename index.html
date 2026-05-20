@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>7th Sea — Scheda Personaggio</title>
+<title>7th Sea — Compendio</title>
 
 <style>
 :root{
@@ -2067,16 +2067,26 @@ function init(){
   syncThemeToggle();
   syncModo();
   updateDamIndicator();
+  window._appInited=true;
   // sync sp-slot-display in settings
   var disp=document.getElementById('sp-slot-display');if(disp)disp.textContent=D.p.spSlot||20;
   var lbl=document.getElementById('sp-slot-label');if(lbl)lbl.textContent=(D.p.spSlot||20)+(D.p.dam?' + 5 DaM':'');
 }
 
+function scheduleCloudSync(){
+  if(typeof OV!=='undefined'&&OV.cloudEnabled&&OV.pgId){
+    clearTimeout(OV.saveTimer);
+    OV.saveTimer=setTimeout(syncToCloud,2000);
+  }
+}
+
 function save(){
   const p=D.p;
-  ['giocatore','personaggio','concetto','nazione','fede','fama','background'].forEach(f=>{const e=document.getElementById('pc-'+f);if(e)p[f]=e.value;});
-  const n=D.nave;
-  ['nome','classe','origini','bonus','ricchezza','background','carico','avventure'].forEach(f=>{const e=document.getElementById('nave-'+f);if(e)n[f]=e.value;});
+  if(window._appInited){
+    ['giocatore','personaggio','concetto','nazione','fede','fama','background'].forEach(f=>{const e=document.getElementById('pc-'+f);if(e)p[f]=e.value;});
+    const n=D.nave;
+    ['nome','classe','origini','bonus','ricchezza','background','carico','avventure'].forEach(f=>{const e=document.getElementById('nave-'+f);if(e)n[f]=e.value;});
+  }
   localStorage.setItem('7sea',JSON.stringify(D));
   if(typeof scheduleCloudSync==='function')scheduleCloudSync();
 }
@@ -3882,6 +3892,7 @@ async function ovConfirmDelete() {
 // ── TORNA ALLA LISTA ──
 function ovShow() {
   if (OV.cloudEnabled) syncToCloud();
+  window._appInited = false; // reset so next pg loads cleanly
   document.getElementById('overlay').style.display = 'flex';
   document.getElementById('btn-back-pgs').style.display = 'none';
   ovShowPgList();
