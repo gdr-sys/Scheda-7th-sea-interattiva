@@ -1138,7 +1138,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     <div style="font-size:0.82rem;color:var(--text-muted);line-height:1.8">
       <div> <b>7th Sea Compendio</b></div>
       <div>Manuali: 7th Sea 2&ordf; Ed. &middot; Navigavia</div>
-      <div style="margin-top:6px;font-size:0.72rem">I dati vengono salvati nel browser (localStorage). Usa Esporta per backup o per trasferire su altri dispositivi.</div>
+      <div style="margin-top:6px;font-size:0.72rem">I dati vengono salvati automaticamente nel cloud (Supabase) se hai effettuato l'accesso con Google. Offline: solo nel browser locale.</div>
     </div>
   </div>
 
@@ -2710,7 +2710,7 @@ function renderPorte(){
     };
     list.onchange=function(e){var el=e.target,i=parseInt(el.dataset.i),t2=el.dataset.tipo;if(isNaN(i)||!t2)return;var k=t2==='minore'?'porteMinori':'porteMaggior';if(el.classList.contains('porte-att-body')){D.str[k][i].attivo=el.checked;save();}};
     list.oninput=function(e){var el=e.target,i=parseInt(el.dataset.i),t2=el.dataset.tipo;if(isNaN(i)||!t2)return;var k=t2==='minore'?'porteMinori':'porteMaggior';
-      if(el.classList.contains('porte-nome')){D.str[k][i].nome=el.value;renderPorte();return;}
+      if(el.classList.contains('porte-nome')){D.str[k][i].nome=el.value;updHeaderText(listId,i,'.entry-title',el.value||'Marchio '+(i+1));save();return;}
       if(el.classList.contains('porte-desc')){D.str[k][i].desc=el.value;save();}};
   });
 }
@@ -2761,7 +2761,7 @@ function renderMatushki(){
   };
   list.oninput=function(e){
     var el=e.target,idx2=parseInt(el.dataset.i),jdx=parseInt(el.dataset.j);
-    if(el.classList.contains('mat-restr')){D.str.matLezioni[idx2].restrizione=el.value;renderMatushki();return;}
+    if(el.classList.contains('mat-restr')){D.str.matLezioni[idx2].restrizione=el.value;updHeaderText('matushki-list',idx2,'.entry-title',el.value||'Lezione '+(idx2+1));save();return;}
     if(el.classList.contains('mat-penit')){D.str.matLezioni[idx2].penitenza=el.value;save();return;}
     if(el.classList.contains('mat-dono-nome')){D.str.matLezioni[idx2].doni[jdx].nome=el.value;save();return;}
     if(el.classList.contains('mat-dono-eff')){D.str.matLezioni[idx2].doni[jdx].effetto=el.value;save();return;}
@@ -3181,7 +3181,7 @@ function renderBabaYaga(){
   });
   list.oninput=function(e){
     var el=e.target,idx2=parseInt(el.dataset.i),jdx=parseInt(el.dataset.j);
-    if(el.classList.contains('baba-restr')){D.str.babaLezioni[idx2].restrizione=el.value;renderBabaYaga();return;}
+    if(el.classList.contains('baba-restr')){D.str.babaLezioni[idx2].restrizione=el.value;updHeaderText('babayaga-list',idx2,'.entry-header span',el.value||'Lezione '+(idx2+1));save();return;}
     if(el.classList.contains('baba-penit')){D.str.babaLezioni[idx2].penitenza=el.value;save();return;}
     if(el.classList.contains('baba-dono-nome')){D.str.babaLezioni[idx2].doni[jdx].nome=el.value;save();return;}
     if(el.classList.contains('baba-dono-eff')){D.str.babaLezioni[idx2].doni[jdx].effetto=el.value;save();return;}
@@ -3454,7 +3454,7 @@ function renderEq(){
     list.appendChild(div);
   });
   list.onclick=function(e){var del=e.target.closest('.eq-del');if(del){e.stopPropagation();delEq(parseInt(del.dataset.i));return;}var tog=e.target.closest('.eq-tog');if(tog&&!e.target.closest('.entry-body')){var b=tog.nextElementSibling;if(b)b.classList.toggle('open');}};
-  list.oninput=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('eq-nome')){D.nave.equipaggio[i].nome=el.value;renderEq();return;}if(el.classList.contains('eq-ruolo')){D.nave.equipaggio[i].ruolo=el.value;renderEq();return;}if(el.classList.contains('eq-note')){D.nave.equipaggio[i].note=el.value;save();}};
+  list.oninput=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('eq-nome')){D.nave.equipaggio[i].nome=el.value;updHeaderText('equipaggio-list',i,'.entry-title',el.value||'Membro '+(i+1));save();return;}if(el.classList.contains('eq-ruolo')){D.nave.equipaggio[i].ruolo=el.value;save();return;}if(el.classList.contains('eq-note')){D.nave.equipaggio[i].note=el.value;save();}};
 }
 function addEq(){if(!D.nave.equipaggio)D.nave.equipaggio=[];D.nave.equipaggio.push({nome:'',ruolo:'',note:''});renderEq();save();}
 function delEq(i){D.nave.equipaggio.splice(i,1);renderEq();save();}
