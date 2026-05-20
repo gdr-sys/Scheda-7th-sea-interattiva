@@ -2194,11 +2194,31 @@ function changeRicMax(d){D.p.ricMax=Math.max(1,Math.min(20,(D.p.ricMax||5)+d));i
 
 // TRATTI
 function renderTratti(){document.getElementById('tratti-container').innerHTML=TRATTI.map(t=>`<div class="trait-row"><span class="trait-name">${t}<\/span><div class="circles" id="cir-${t}"><\/div><\/div>`).join('');TRATTI.forEach(t=>renderTC(t));}
-function renderTC(t){const v=D.p.tratti[t]||0,c=document.getElementById('cir-'+t);c.innerHTML='';for(let i=1;i<=5;i++){const el=document.createElement('div');el.className='circle'+(i<=v?' filled':'');el.onclick=()=>{D.p.tratti[t]=i;renderTC(t);save();};c.appendChild(el);}}
+function renderTC(t){const v=D.p.tratti[t]||0,c=document.getElementById('cir-'+t);c.innerHTML='';for(let i=1;i<=5;i++){const el=document.createElement('div');el.className='circle'+(i<=v?' filled':'');el.onclick=()=>{D.p.tratti[t]=(D.p.tratti[t]===i)?i-1:i;renderTC(t);save();};c.appendChild(el);}}
 
 // ABILITA
 function renderAbilita(){document.getElementById('abilita-container').innerHTML=ABILITA.map(a=>`<div class="abilita-row"><span class="abilita-name">${a}<\/span><div class="circles circles-sm" id="cab-${a}"><\/div><\/div>`).join('');ABILITA.forEach(a=>renderAC(a));}
-function renderAC(a){const v=D.p.abilita[a]||0,c=document.getElementById('cab-'+a);c.innerHTML='';for(let i=1;i<=5;i++){const el=document.createElement('div');el.className='circle'+(i<=v?' filled':'');el.onclick=()=>{D.p.abilita[a]=i;renderAC(a);save();};c.appendChild(el);}}
+function renderAC(a){
+  const v=D.p.abilita[a]||0;
+  const c=document.getElementById('cab-'+a);
+  c.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const el=document.createElement('div');
+    const locked=isCreazione()&&i>3;
+    el.className='circle'+(i<=v?' filled':'')+(locked?' locked-circle':'');
+    if(locked){
+      el.title='Max 3 in Modalità Creazione';
+      el.style.opacity='0.3';
+      el.style.cursor='not-allowed';
+    } else {
+      el.onclick=()=>{
+        D.p.abilita[a]=(D.p.abilita[a]===i)?i-1:i;
+        renderAC(a);save();
+      };
+    }
+    c.appendChild(el);
+  }
+}
 
 function loadPC(){['giocatore','personaggio','concetto','nazione','fede','fama','background'].forEach(f=>{const e=document.getElementById('pc-'+f);if(e)e.value=D.p[f]||'';});}
 
@@ -2524,10 +2544,10 @@ function renderHexenwerk(){
 }
 function addHexUnguento(tipo){if(!D.str.hexUnguenti)D.str.hexUnguenti=[];D.str.hexUnguenti.push({nome:'',tipo,ingredienti:'',effetto:'',pronto:false});renderHexenwerk();save();}
 function delHexUnguento(i){D.str.hexUnguenti.splice(i,1);renderHexenwerk();save();}
-function updHexU(i,f,v){D.str.hexUnguenti[i][f]=v;if(['nome','tipo'].includes(f))renderHexenwerk();else save();}
+function updHexU(i,f,v){D.str.hexUnguenti[i][f]=v;if(['nome','tipo'].includes(f)){updHeaderText('hex-ung-list',i,'.entry-title',D.str.hexUnguenti[i].nome||'Unguento '+(i+1));save();}else save();}
 function addUngetoedet(){if(!D.str.ungetoedet)D.str.ungetoedet=[];D.str.ungetoedet.push({nome:'',desc:''});renderHexenwerk();save();}
 function delUngetoedet(i){D.str.ungetoedet.splice(i,1);renderHexenwerk();save();}
-function updUng(i,f,v){D.str.ungetoedet[i][f]=v;if(f==='nome')renderHexenwerk();else save();}
+function updUng(i,f,v){D.str.ungetoedet[i][f]=v;if(f==='nome'){updHeaderText('ungetoedet-list',i,'.entry-title',v||'Creatura '+(i+1));save();}else save();}
 
 // GLAMOUR
 const GESA_DEFAULT=[
@@ -2642,7 +2662,7 @@ function renderGlamour(){
 }
 function addGlamour(tipo){if(!D.str.glamours)D.str.glamours=[];D.str.glamours.push({nome:'',tipo,tratto:'Vigore',grado:1,effetto:'',usato:false});renderGlamour();save();}
 function delGlamour(i){D.str.glamours.splice(i,1);renderGlamour();save();}
-function updGlamour(i,f,v){D.str.glamours[i][f]=v;if(['nome','tipo'].includes(f))renderGlamour();else save();}
+function updGlamour(i,f,v){D.str.glamours[i][f]=v;if(['nome','tipo'].includes(f)){updHeaderText('glamour-list',i,'.gl-nome-display',D.str.glamours[i].nome||'Glamour '+(i+1));save();}else save();}
 function addGesa(){if(!D.str.gesa)D.str.gesa=[];D.str.gesa.push({ok:false,testo:''});renderGlamour();save();}
 function delGesa(i){D.str.gesa.splice(i,1);renderGlamour();save();}
 function updGesa(i,f,v){if(!D.str.gesa[i])return;D.str.gesa[i][f]=v;save();}
@@ -2686,7 +2706,7 @@ function renderPorte(){
 }
 function addPorteMarchio(tipo){const k=tipo==='minore'?'porteMinori':'porteMaggior';if(!D.str[k])D.str[k]=[];D.str[k].push({nome:'',desc:'',attivo:true});renderPorte();save();}
 function delPorte(tipo,i){const k=tipo==='minore'?'porteMinori':'porteMaggior';D.str[k].splice(i,1);renderPorte();save();}
-function updPorte(tipo,i,f,v){const k=tipo==='minore'?'porteMinori':'porteMaggior';D.str[k][i][f]=v;if(f==='nome')renderPorte();else save();}
+function updPorte(tipo,i,f,v){const k=tipo==='minore'?'porteMinori':'porteMaggior';D.str[k][i][f]=v;if(f==='nome'){var listId=tipo==='minore'?'porte-minori-list':'porte-maggiori-list';updHeaderText(listId,i,'.entry-title',v||'Marchio '+(i+1));save();}else save();}
 
 // DAR MATUSHKI
 function renderMatushki(){
@@ -2740,7 +2760,7 @@ function renderMatushki(){
 function updMatDono(i,j,f,v){if(!D.str.matLezioni[i].doni)D.str.matLezioni[i].doni=[];D.str.matLezioni[i].doni[j][f]=v;save();}
 function addMatLezione(){if(!D.str.matLezioni)D.str.matLezioni=[];D.str.matLezioni.push({restrizione:'',penitenza:'',doni:[{nome:'',effetto:''},{nome:'',effetto:''}]});renderMatushki();save();}
 function delMatLezione(i){D.str.matLezioni.splice(i,1);renderMatushki();save();}
-function updMat(i,f,v){D.str.matLezioni[i][f]=v;if(f==='restrizione')renderMatushki();else save();}
+function updMat(i,f,v){D.str.matLezioni[i][f]=v;if(f==='restrizione'){updHeaderText('matushki-list',i,'.entry-title',v||'Lezione '+(i+1));save();}else save();}
 function addMatDono(i){
   if(!D.str.matLezioni[i].doni)D.str.matLezioni[i].doni=[];
   D.str.matLezioni[i].doni.push({nome:'',effetto:''});
@@ -2910,7 +2930,7 @@ function renderSorte(){
 function chgStaffilate(d){D.str.sorteStaffilate=Math.max(0,(D.str.sorteStaffilate||0)+d);const e=document.getElementById('sorte-staffilate');if(e)e.textContent=D.str.sorteStaffilate;save();}
 function addSorteTrama(tipo){if(!D.str.sorteTrame)D.str.sorteTrame=[];D.str.sorteTrame.push({nome:tipo==='lettura'?'Lettura':'',tipo,staffilate:1,effetto:'',usata:false});renderSorte();save();}
 function delSorteTrama(i){D.str.sorteTrame.splice(i,1);renderSorte();save();}
-function updSorteTrama(i,f,v){D.str.sorteTrame[i][f]=v;if(['nome','tipo'].includes(f))renderSorte();else save();}
+function updSorteTrama(i,f,v){D.str.sorteTrame[i][f]=v;if(f==='nome'){updHeaderText('sorte-trame-list',i,'.sort-nome-disp',v||'Trama '+(i+1));save();}else if(f==='tipo'){renderSorte();}else save();}
 function addSorteEffetto(tipo){if(!D.str.sorteEffetti)D.str.sorteEffetti=[];D.str.sorteEffetti.push({tipo,bersaglio:'',desc:''});renderSorte();save();}
 function delSorteEff(i){D.str.sorteEffetti.splice(i,1);renderSorte();save();}
 function updSorteEff(i,f,v){D.str.sorteEffetti[i][f]=v;save();}
@@ -3059,7 +3079,7 @@ function updRisv(i,f,v){if(!D.str.risvegliati[i])return;D.str.risvegliati[i][f]=
 // MO'UO
 function addMouo(){if(!D.str.mouo)D.str.mouo=[];D.str.mouo.push({nome:'',min:'',mag:'',sbiad:false});renderMouo();save();}
 function delMouo(i){D.str.mouo.splice(i,1);renderMouo();save();}
-function updMouo(i,f,v){if(!D.str.mouo||!D.str.mouo[i])return;D.str.mouo[i][f]=v;if(f==='nome')renderMouo();else save();}
+function updMouo(i,f,v){if(!D.str.mouo||!D.str.mouo[i])return;D.str.mouo[i][f]=v;if(f==='nome'){save();}else save();}
 function renderMouo(){
   var el=document.getElementById('mouo-list');if(!el)return;
   var nomi=['Bussola','Corpo','Nodo','Onda','Saetta','Stella'];
@@ -3197,7 +3217,7 @@ function renderStrMacro(){
 function togSM(h){h.nextElementSibling.classList.toggle('open');}
 function addStrMacro(){if(!D.str.macro)D.str.macro=[];D.str.macro.push({nome:'Potere '+(D.str.macro.length+1),testo:''});renderStrMacro();save();}
 function delSM(i){D.str.macro.splice(i,1);renderStrMacro();save();}
-function updSM(i,f,v){D.str.macro[i][f]=v;if(f==='nome')renderStrMacro();else save();}
+function updSM(i,f,v){D.str.macro[i][f]=v;if(f==='nome'){updHeaderText('str-macro-list',i,'.smacro-nd',v||'Potere '+(i+1));save();}else save();}
 
 // ARCANI
 function renderArcani(){
@@ -3255,7 +3275,7 @@ function renderArcani(){
   };
 }
 function delArc(i){D.p.arcani.splice(i,1);renderArcani();save();}
-function updArc(i,f,v){D.p.arcani[i][f]=v;if(['nome','tipo'].includes(f))renderArcani();else save();}
+function updArc(i,f,v){D.p.arcani[i][f]=v;if(f==='nome'){updHeaderText('arcani-list',i,'.entry-title',v||'Arcano '+(i+1));save();}else if(f==='tipo'){renderArcani();}else save();}
 function addArcanoHB(){if(!D.p.arcani)D.p.arcani=[];D.p.arcani.push({nome:'Nuovo Arcano',tipo:'Virtu',desc:'',note:'',homebrew:true});renderArcani();save();}
 function openArcaniModal(){document.getElementById('arcani-modal').classList.add('open');document.getElementById('a-search').value='';renderAList();}
 function closeAModal(){document.getElementById('arcani-modal').classList.remove('open');}
@@ -3338,6 +3358,17 @@ function delV(i){
   }
   renderVantaggi();save();
 }
+// Aggiorna solo il testo dell'header senza ri-renderizzare tutto
+function updHeaderText(listId, i, selector, text){
+  var list=document.getElementById(listId);
+  if(!list)return;
+  var items=list.children;
+  if(items[i]){
+    var el=items[i].querySelector(selector);
+    if(el)el.textContent=text;
+  }
+}
+
 function updV(i,f,v){D.p.vantaggi[i][f]=v;if(f==='nome')renderVantaggi();else save();}
 function addVantaggioHB(){if(!D.p.vantaggi)D.p.vantaggi=[];D.p.vantaggi.push({nome:'Homebrew',desc:'',note:'',homebrew:true});renderVantaggi();save();}
 function openVantaggiModal(){document.getElementById('vantaggi-modal').classList.add('open');document.getElementById('v-search').value='';renderVList();}
@@ -3394,7 +3425,7 @@ function renderStorie(){
 }
 function addStoria(){if(!D.p.storie)D.p.storie=[];D.p.storie.push({titolo:'',obiettivo:'',progressi:''});renderStorie();save();}
 function delStoria(i){D.p.storie.splice(i,1);renderStorie();save();}
-function updStoria(i,f,v){D.p.storie[i][f]=v;if(f==='titolo')renderStorie();else save();}
+function updStoria(i,f,v){D.p.storie[i][f]=v;if(f==='titolo'){updHeaderText('storie-list',i,'.stor-tit-d',v||'Storia '+(i+1));save();}else save();}
 
 // NAVE
 function loadNave(){const n=D.nave;['nome','classe','origini','bonus','ricchezza','background','carico','avventure'].forEach(f=>{const e=document.getElementById('nave-'+f);if(e)e.value=n[f]||'';});const c=document.getElementById('ciurme-totale');if(c)c.value=n.ciurmeTotale||20;}
@@ -3417,7 +3448,7 @@ function renderEq(){
 }
 function addEq(){if(!D.nave.equipaggio)D.nave.equipaggio=[];D.nave.equipaggio.push({nome:'',ruolo:'',note:''});renderEq();save();}
 function delEq(i){D.nave.equipaggio.splice(i,1);renderEq();save();}
-function updEq(i,f,v){D.nave.equipaggio[i][f]=v;if(f==='nome')renderEq();else save();}
+function updEq(i,f,v){D.nave.equipaggio[i][f]=v;if(f==='nome'){updHeaderText('equipaggio-list',i,'.entry-title',v||'Membro '+(i+1));save();}else save();}
 
 // MONDO
 function renderMondo(){
@@ -3436,7 +3467,7 @@ function renderMondo(){
 }
 function addMondo(){if(!D.mondo)D.mondo=[];D.mondo.push({nome:'',desc:''});renderMondo();save();}
 function delMondo(i){D.mondo.splice(i,1);renderMondo();save();}
-function updMondo(i,f,v){D.mondo[i][f]=v;if(f==='nome')renderMondo();else save();}
+function updMondo(i,f,v){D.mondo[i][f]=v;if(f==='nome'){updHeaderText('mondo-list',i,'.mondo-nome-d',v||'Luogo '+(i+1));save();}else save();}
 
 // NPC
 function renderNpc(){
@@ -3456,7 +3487,7 @@ function renderNpc(){
 }
 function addNpc(){if(!D.npc)D.npc=[];D.npc.push({nome:'',ruolo:'',note:''});renderNpc();save();}
 function delNpc(i){D.npc.splice(i,1);renderNpc();save();}
-function updNpc(i,f,v){D.npc[i][f]=v;if(f==='nome')renderNpc();else save();}
+function updNpc(i,f,v){D.npc[i][f]=v;if(f==='nome'){updHeaderText('npc-list',i,'.npc-nome-d',v||'PNG '+(i+1));save();}else save();}
 
 // NOTE
 function renderNote(){
@@ -3475,7 +3506,7 @@ function renderNote(){
 }
 function addNota(){if(!D.note)D.note=[];D.note.push({titolo:'Sessione '+((D.note||[]).length+1),testo:''});renderNote();save();}
 function delNota(i){D.note.splice(i,1);renderNote();save();}
-function updNota(i,f,v){D.note[i][f]=v;if(f==='titolo')renderNote();else save();}
+function updNota(i,f,v){D.note[i][f]=v;if(f==='titolo'){updHeaderText('note-list',i,'.nota-tit-d',v||'Nota '+(i+1));save();}else save();}
 
 function togE(h){h.nextElementSibling.classList.toggle('open');}
 function togCard(h){
