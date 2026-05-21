@@ -410,6 +410,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       </div>
       <input class="field-input" id="bg-search" placeholder="Cerca…" oninput="renderBgList()" style="margin-bottom:8px">
       <div id="bg-list" style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--card2)"></div>
+      <div id="bg-applicati-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
       <div id="bg-selected" style="margin-top:8px;padding:10px;border-radius:8px;background:var(--card2);border:1px solid var(--gold);display:none">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div style="flex:1">
@@ -2230,7 +2231,7 @@ function renderAC(a){
   }
 }
 
-function loadPC(){['giocatore','personaggio','concetto','nazione','fede','fama','background'].forEach(f=>{const e=document.getElementById('pc-'+f);if(e)e.value=D.p[f]||'';});}
+function loadPC(){['giocatore','personaggio','concetto','nazione','fede','fama','background'].forEach(f=>{const e=document.getElementById('pc-'+f);if(e)e.value=D.p[f]||'';});renderBgChips();}
 
 // FERITE
 function autoCountFerite(){
@@ -3059,7 +3060,7 @@ function renderEstirpe(){
     var tog=e.target.closest('.lez-toggle');if(tog&&!e.target.closest('.glamour-body')){var body=tog.nextElementSibling;if(body)body.classList.toggle('open');}
   };
   el.onchange=function(e){var t=e.target,i=parseInt(t.dataset.i);if(isNaN(i))return;if(t.classList.contains('lez-tipo')){D.str.lezioni[i].tipo=t.value;renderEstirpe();}};
-  el.oninput=function(e){var t=e.target,i=parseInt(t.dataset.i);if(isNaN(i))return;if(t.classList.contains('lez-nome')){D.str.lezioni[i].nome=t.value;save();}else if(t.classList.contains('lez-eff')){D.str.lezioni[i].effetto=t.value;save();}};
+  el.oninput=function(e){var t=e.target,i=parseInt(t.dataset.i);if(isNaN(i))return;if(t.classList.contains('lez-nome')){D.str.lezioni[i].nome=t.value;var cards=el.querySelectorAll('.glamour-item');if(cards[i]){var nd=cards[i].querySelector('.lez-nome-disp');if(nd)nd.textContent=t.value||'Lezione '+(i+1);}save();}else if(t.classList.contains('lez-eff')){D.str.lezioni[i].effetto=t.value;save();}};
 }
 // MAGIA DEL RISVEGLIO
 function addRisvegliato(){if(!D.str.risvegliati)D.str.risvegliati=[];D.str.risvegliati.push({nome:'',tipo:'bambola',note:''});renderRisveglio();save();}
@@ -3379,7 +3380,14 @@ function updHeaderText(listId, i, selector, text){
   }
 }
 
-function updV(i,f,v){D.p.vantaggi[i][f]=v;if(f==='nome')renderVantaggi();else save();}
+function updV(i,f,v){
+  D.p.vantaggi[i][f]=v;
+  if(f==='nome'){
+    var list=document.getElementById('vantaggi-list');
+    if(list){var cards=list.querySelectorAll('.entry-card');if(cards[i]){var hdr=cards[i].querySelector('.entry-title');if(hdr)hdr.textContent=v||'Vantaggio';}}
+  }
+  save();
+}
 function addVantaggioHB(){if(!D.p.vantaggi)D.p.vantaggi=[];D.p.vantaggi.push({nome:'Homebrew',desc:'',note:'',homebrew:true});renderVantaggi();save();}
 function openVantaggiModal(){document.getElementById('vantaggi-modal').classList.add('open');document.getElementById('v-search').value='';renderVList();}
 function closeVModal(){document.getElementById('vantaggi-modal').classList.remove('open');}
@@ -3572,6 +3580,23 @@ function renderBgList(){
   });
 }
 
+function renderBgChips(){
+  var el=document.getElementById('bg-applicati-chips');if(!el)return;
+  var list=D.p.bgApplicati||[];
+  if(!list.length){el.innerHTML='';return;}
+  el.innerHTML=list.map(function(b,i){
+    return '<div style="display:inline-flex;align-items:center;gap:4px;background:var(--card2);border:1px solid var(--gold);border-radius:20px;padding:3px 10px 3px 12px;font-size:0.72rem">'
+      +'<span style="color:var(--gold)">'+escH(b.nome)+'<\/span>'
+      +'<button onclick="removeBgApplicato('+i+')" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;padding:0 2px;line-height:1">&#10005;<\/button>'
+      +'<\/div>';
+  }).join('');
+}
+function removeBgApplicato(i){
+  if(!D.p.bgApplicati)return;
+  D.p.bgApplicati.splice(i,1);
+  if(isCreazione())D.p._bgApplicati=Math.max(0,(D.p._bgApplicati||1)-1);
+  renderBgChips();save();
+}
 function initBgNazioni(man){
   var sel=document.getElementById('bg-filter-nazione');if(!sel)return;
   var filtered=man?BDB.filter(function(b){return b.manuale===man;}):BDB;
@@ -3667,6 +3692,12 @@ function applyBackground(){
     D.p._bgApplicati=(D.p._bgApplicati||0)+1;
     msgs.push('Background applicati in creazione: '+D.p._bgApplicati+'/2');
   }
+  // Salva bg nella lista dei selezionati
+  if(!D.p.bgApplicati)D.p.bgApplicati=[];
+  if(!D.p.bgApplicati.some(function(x){return x.id===b.id;})){
+    D.p.bgApplicati.push({id:b.id,nome:b.nome,nazione:b.nazione,manuale:b.manuale});
+  }
+  renderBgChips();
   alert(msgs.join('\n'));
 }
 
@@ -3833,23 +3864,32 @@ function ovOpenPg(id, dati) {
   OV.pgId = id;
   OV.cloudEnabled = true;
 
-  // Load dati into D
+  // Carica i dati nel localStorage E in D direttamente
   if (dati && Object.keys(dati).length > 0) {
-    // Merge with defaults
-    var loaded = dati;
-    if (!loaded.theme) loaded.theme = 'dark';
-    if (!loaded.modo) loaded.modo = 'libera';
-    // Save to localStorage and set as D
-    localStorage.setItem('7sea', JSON.stringify(loaded));
+    if (!dati.theme) dati.theme = 'dark';
+    if (!dati.modo) dati.modo = 'libera';
+    // Sovrascrivi D completamente con i dati del pg
+    D = dati;
+    localStorage.setItem('7sea', JSON.stringify(D));
+  } else {
+    // Nuovo pg vuoto: resetta D ai default
+    D = {theme:'dark',modo:'libera',
+      p:{giocatore:'',personaggio:'',concetto:'',nazione:'',fede:'',fama:'',background:'',
+         tratti:{Vigore:2,Grazia:2,Risolutezza:2,Acume:2,Panache:2},
+         abilita:{},vantaggi:[],arcani:[],storie:[],
+         pe:3,peMax:3,ric:0,ricMax:5,spSlot:20,dam:false,spFerite:[],immagine:''},
+      str:{tipo:'',tipoRef:'',tipiAttivi:[],nazione:'',note:''},
+      nave:{},mondo:[],npc:[],note:[]};
+    localStorage.setItem('7sea', JSON.stringify(D));
   }
 
-  // Hide overlay, show app
+  // Nascondi overlay, mostra app
   document.getElementById('overlay').style.display = 'none';
   var backBtn = document.getElementById('btn-back-pgs');
   if (backBtn) backBtn.style.display = '';
 
-  // Init the app
-  try { init(); initBgNazioni(''); renderBgList(); } catch(e) { console.error(e); }
+  // Inizializza (legge da D già settato)
+  try { init(); initBgNazioni(''); renderBgList(); } catch(e) { console.error('ovOpenPg init error:', e); }
 }
 
 // ── NEW PG ──
