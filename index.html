@@ -395,42 +395,9 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   <div class="card">
     <div class="sec-header">BACKGROUND</div>
 
-    <!-- Selezione Background da DB -->
-    <div style="margin-bottom:12px">
-      <div style="font-family:var(--font-title);font-size:0.72rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">SCEGLI DAL MANUALE</div>
-      <div style="display:flex;gap:6px;margin-bottom:6px">
-        <select class="field-input" id="bg-filter-manuale" style="flex:0 0 auto;font-family:var(--font-body)" onchange="onBgManChange()">
-          <option value="">Tutti</option>
-          <option value="7th Sea">7th Sea</option>
-          <option value="Navigavia">Navigavia</option>
-        </select>
-        <select class="field-input" id="bg-filter-nazione" style="flex:1;min-width:0;font-family:var(--font-body);overflow:hidden;text-overflow:ellipsis" onchange="renderBgList()">
-          <option value="">Tutte le nazioni</option>
-        </select>
-      </div>
-      <input class="field-input" id="bg-search" placeholder="Cerca…" oninput="renderBgList()" style="margin-bottom:8px">
-      <div id="bg-list" style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--card2)"></div>
-      <div id="bg-applicati-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
-      <div id="bg-selected" style="margin-top:8px;padding:10px;border-radius:8px;background:var(--card2);border:1px solid var(--gold);display:none">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div style="flex:1">
-            <div style="font-family:var(--font-title);font-weight:700;color:var(--gold)" id="bg-sel-nome"></div>
-            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px" id="bg-sel-nazione"></div>
-            <div style="font-size:0.82rem;margin-top:6px;line-height:1.5;color:var(--text)" id="bg-sel-desc"></div>
-            <div style="font-size:0.75rem;color:var(--gold);margin-top:6px;font-style:italic" id="bg-sel-pec"></div>
-            <div style="margin-top:8px;font-size:0.75rem;color:var(--text-muted)">
-              <span style="font-family:var(--font-title);letter-spacing:1px">VANTAGGI: </span><span id="bg-sel-vant"></span>
-            </div>
-            <div style="margin-top:4px;font-size:0.75rem;color:var(--text-muted)">
-              <span style="font-family:var(--font-title);letter-spacing:1px">ABILITÀ: </span><span id="bg-sel-abil"></span>
-            </div>
-          </div>
-          <button class="del-btn" onclick="clearBgSel()" style="margin-left:8px" title="Deseleziona">&#10005;</button>
-        </div>
-        <button class="add-btn" onclick="applyBackground()" style="margin-top:10px;width:100%;background:var(--gold);color:#1a1209;font-size:0.75rem">APPLICA BACKGROUND (vantaggi + abilità)</button>
-      </div>
-    </div>
-
+        <!-- Background applicati (chips) -->
+    <div id="bg-applicati-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+    <button class="add-btn" onclick="openBgModal()" style="width:100%;margin-bottom:10px">+ SCEGLI BACKGROUND</button>
     <div style="font-family:var(--font-title);font-size:0.72rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">NOTE BACKGROUND</div>
     <textarea class="field-input" id="pc-background" rows="4" oninput="save()" placeholder="La storia del tuo personaggio…"></textarea>
   </div>
@@ -1146,6 +1113,46 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </div>
 
 </div><!-- /app-shell -->
+
+<!-- BACKGROUND MODAL -->
+<div class="select-modal" id="bg-modal">
+  <div class="select-modal-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;position:sticky;top:0;background:var(--card);z-index:1;padding-bottom:8px;border-bottom:1px solid var(--border)">
+      <h2 style="margin:0">SCEGLI BACKGROUND</h2>
+      <button class="modal-btn secondary" onclick="closeBgModal()" style="padding:6px 14px">&#10005; CHIUDI</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <select class="search-input" id="bg-filter-manuale" style="flex:0 0 auto;font-family:var(--font-body);max-width:100px" onchange="onBgManChange()">
+        <option value="">Tutti</option>
+        <option value="7th Sea">7th Sea</option>
+        <option value="Navigavia">Navigavia</option>
+      </select>
+      <select class="search-input" id="bg-filter-nazione" style="flex:1;min-width:0;font-family:var(--font-body)" onchange="renderBgList()">
+        <option value="">Tutte le nazioni</option>
+      </select>
+    </div>
+    <input class="search-input" id="bg-search" placeholder="Cerca background…" oninput="renderBgList()">
+    <div id="bg-list"></div>
+    <div id="bg-selected" style="display:none;padding:12px;border-radius:8px;background:var(--card2);border:1px solid var(--gold);margin-top:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="flex:1">
+          <div style="font-family:var(--font-title);font-weight:700;color:var(--gold);font-size:1rem" id="bg-sel-nome"></div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px" id="bg-sel-nazione"></div>
+        </div>
+        <button class="del-btn" onclick="clearBgSel()" title="Deseleziona">&#10005;</button>
+      </div>
+      <div style="font-size:0.83rem;line-height:1.5;margin-bottom:6px" id="bg-sel-desc"></div>
+      <div style="font-size:0.75rem;color:var(--gold);font-style:italic;margin-bottom:8px" id="bg-sel-pec"></div>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">
+        <span style="font-family:var(--font-title);letter-spacing:1px">VANTAGGI: </span><span id="bg-sel-vant"></span>
+      </div>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px">
+        <span style="font-family:var(--font-title);letter-spacing:1px">ABILITÀ: </span><span id="bg-sel-abil"></span>
+      </div>
+      <button class="modal-btn primary" onclick="applyBackground()" style="width:100%">APPLICA BACKGROUND (vantaggi + abilità)</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODALS -->
 <div class="modal-overlay" id="modal-overlay">
@@ -3597,6 +3604,13 @@ function removeBgApplicato(i){
   if(isCreazione())D.p._bgApplicati=Math.max(0,(D.p._bgApplicati||1)-1);
   renderBgChips();save();
 }
+function openBgModal(){
+  var m=document.getElementById('bg-modal');if(m)m.classList.add('open');
+  renderBgList();
+}
+function closeBgModal(){
+  var m=document.getElementById('bg-modal');if(m)m.classList.remove('open');
+}
 function initBgNazioni(man){
   var sel=document.getElementById('bg-filter-nazione');if(!sel)return;
   var filtered=man?BDB.filter(function(b){return b.manuale===man;}):BDB;
@@ -3698,6 +3712,7 @@ function applyBackground(){
     D.p.bgApplicati.push({id:b.id,nome:b.nome,nazione:b.nazione,manuale:b.manuale});
   }
   renderBgChips();
+  closeBgModal();
   alert(msgs.join('\n'));
 }
 
