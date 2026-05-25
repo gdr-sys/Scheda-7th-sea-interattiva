@@ -1149,7 +1149,11 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px">
         <span style="font-family:var(--font-title);letter-spacing:1px">ABILITÀ: </span><span id="bg-sel-abil"></span>
       </div>
-      <button class="modal-btn primary" onclick="applyBackground()" style="width:100%">APPLICA BACKGROUND (vantaggi + abilità)</button>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="modal-btn secondary" onclick="associaBackground()" style="flex:1">ASSOCIA</button>
+        <button class="modal-btn primary" onclick="applyBackground()" style="flex:1">APPLICA (vantaggi + abilità)</button>
+      </div>
+      <div style="font-size:0.68rem;color:var(--text-muted);margin-top:6px;text-align:center;font-family:var(--font-title)">ASSOCIA: solo il nome &middot; APPLICA: nome + vantaggi + abilità</div>
     </div>
   </div>
 </div>
@@ -3644,6 +3648,23 @@ function selectBackground(b){
 function clearBgSel(){
   _bgSelected=null;
   var sd=document.getElementById('bg-selected');if(sd)sd.style.display='none';
+}
+
+function associaBackground(){
+  if(!_bgSelected)return;
+  var b=_bgSelected;
+  if(isCreazione()){
+    var bgCount=(D.p._bgApplicati||0);
+    if(bgCount>=2){alert('In Modalità Creazione puoi applicare al massimo 2 Background.');return;}
+    D.p._bgApplicati=(D.p._bgApplicati||0)+1;
+  }
+  if(!D.p.bgApplicati)D.p.bgApplicati=[];
+  if(!D.p.bgApplicati.some(function(x){return x.id===b.id;})){
+    D.p.bgApplicati.push({id:b.id,nome:b.nome,nazione:b.nazione,manuale:b.manuale});
+  }
+  renderBgChips();
+  closeBgModal();
+  save();
 }
 
 function applyBackground(){
