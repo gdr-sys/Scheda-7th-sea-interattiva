@@ -3680,12 +3680,13 @@ function applyBackground(){
   var b=_bgSelected;
   // Add abilità: set each to 1 if currently 0
   var changed=[];
+  // Le chiavi in D.p.abilita corrispondono agli elementi di ABILITA[]
   var abMap={
-    'Allettare':'allettare','Arte della Guerra':'arteguerra','Atletica':'atletica',
-    'Cavalcare':'cavalcare','Convincere':'convincere','Empatia':'empatia',
-    'Esibirsi':'esibirsi','Furto':'furto','Intimidire':'intimidire',
-    'Istruzione':'istruzione','Mira':'mira','Mischia':'mischia',
-    'Nascondersi':'nascondersi','Navigazione':'navigazione','Notare':'notare','Rissa':'rissa'
+    'Allettare':'Allettare','Arte della Guerra':'A.d.Guerra','Atletica':'Atletica',
+    'Cavalcare':'Cavalcare','Convincere':'Convincere','Empatia':'Empatia',
+    'Esibirsi':'Esibirsi','Furto':'Furto','Intimidire':'Intimidire',
+    'Istruzione':'Istruzione','Mira':'Mira','Mischia':'Mischia',
+    'Nascondersi':'Nascondersi','Navigazione':'Navigazione','Notare':'Notare','Rissa':'Rissa'
   };
   (b.abilita||[]).forEach(function(a){
     var key=abMap[a];
