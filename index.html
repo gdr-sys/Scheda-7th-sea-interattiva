@@ -43,11 +43,6 @@ textarea.field-input{resize:vertical;min-height:80px}
 .abilita-row{display:flex;align-items:center;justify-content:space-between;gap:4px}
 .abilita-name{font-size:0.85rem;color:var(--text);flex-shrink:0;min-width:90px}
 .circles-sm .circle{width:16px;height:16px}
-.sp-slot{width:22px;height:22px;border-radius:50%;border:2px solid var(--crimson);background:var(--circle-empty);cursor:pointer;transition:background .15s,transform .1s;flex-shrink:0;display:inline-block;margin:2px}
-.sp-slot.sp-n{background:var(--circle-filled)}
-.sp-slot.sp-d{background:var(--circle-filled);border-color:var(--gold);box-shadow:0 0 4px var(--gold)}
-.sp-slot:hover{transform:scale(1.15)}
-#spirale-pc{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
 .add-btn{background:var(--crimson);color:#fdf9f3;border:none;border-radius:8px;padding:8px 16px;font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;font-size:0.72rem;font-weight:700;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s}
 .add-btn:hover{background:var(--crimson-light)}
 .del-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;transition:color .2s}
@@ -2366,39 +2361,29 @@ function renderSpiralePC(){
   var p=D.p;
   var base=D.p.spSlot||parseInt((document.getElementById('sp-slot')||{value:'20'}).value)||20;
   var totale=base+(p.dam?5:0);
-  var hardcore=p.spModo==='hardcore';
-  var el=document.getElementById('spirale-pc');if(!el)return;
-  el.innerHTML='';
-  var ferite=p.spFerite||[];
-  // Rebuild slots array
-  for(var s=0;s<totale;s++){
-    var fd=ferite[s];
-    var tipo=fd?fd.tipo:'';
-    var div=document.createElement('div');
-    div.className='sp-slot'+(tipo?' sp-'+tipo:'');
-    div.dataset.s=s;
-    // In hardcore: dramatic slots are grouped visually in 5s
-    if(hardcore&&tipo==='d'){
-      div.title='Ferita Drammatica (Hardcore: vale 5 ferite)';
-      div.style.outline='2px solid var(--crimson)';
-    }
-    div.onclick=function(){clickSpSlot(parseInt(this.dataset.s));};
-    el.appendChild(div);
+  if(!p.spFerite||p.spFerite.length!==totale){
+    var old=p.spFerite||[];
+    p.spFerite=Array(totale).fill(false);
+    for(var k=0;k<Math.min(old.length,totale);k++)p.spFerite[k]=old[k];
   }
-  // Hardcore: show equivalent normal wounds count
-  if(hardcore){
-    var normali=(ferite.filter(function(f){return f&&f.tipo==='n';}).length);
-    var dramm=(ferite.filter(function(f){return f&&f.tipo==='d';}).length);
-    var totFerite=normali+dramm*5;
-    var info=document.getElementById('sp-info-hardcore');
-    if(!info){
-      info=document.createElement('div');info.id='sp-info-hardcore';
-      info.style.cssText='font-size:0.72rem;color:var(--crimson);font-family:var(--font-title);margin-top:4px';
-      el.parentNode.insertBefore(info,el.nextSibling);
+  var si=getStarIdx(totale);
+  var el=document.getElementById('spirale-pc');
+  if(!el)return;
+  el.innerHTML=buildSpiral(totale,p.spFerite,si,'togWPC','var(--crimson)');
+
+  // Hardcore info
+  var hcInfo=document.getElementById('sp-info-hardcore');
+  if(p.spModo==='hardcore'){
+    if(!hcInfo){
+      hcInfo=document.createElement('div');hcInfo.id='sp-info-hardcore';
+      hcInfo.style.cssText='font-size:0.72rem;color:var(--crimson);font-family:var(--font-title);margin-top:6px;text-align:center';
+      el.parentNode.insertBefore(hcInfo,el.nextSibling);
     }
-    info.textContent='Hardcore: '+normali+' normali + '+dramm+' dramm. = '+totFerite+' ferite effettive';
+    var nStars=si.filter(function(i){return p.spFerite[i];}).length;
+    var nNorm=p.spFerite.filter(function(v,i){return v&&!si.includes(i);}).length;
+    hcInfo.textContent='Hardcore: '+nNorm+' normali + '+nStars+' dramm. (×5) = '+(nNorm+nStars*5)+' ferite effettive';
   } else {
-    var old=document.getElementById('sp-info-hardcore');if(old)old.remove();
+    if(hcInfo)hcInfo.remove();
   }
   updFeriteDisplay();
 }
