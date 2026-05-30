@@ -413,6 +413,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       Slot: <b id="sp-slot-label" style="color:var(--gold)">20</b> · modifica nelle <span style="text-decoration:underline;cursor:pointer" onclick="showPage('impostazioni',document.querySelector('.nav-tab:last-child'))">Impostazioni</span>
     </div>
     <input type="hidden" id="sp-slot" value="20">
+    <div style="font-size:0.7rem;color:var(--gold);font-family:var(--font-title);letter-spacing:1px;margin-bottom:4px">&#9660; START</div>
     <div id="spirale-pc"></div>
     <div class="eff-box" id="eff-box-pc"></div>
     <div style="margin-top:10px">
@@ -2363,12 +2364,6 @@ function renderSpiralePC(){
   var hardcore=p.spModo==='hardcore';
   var el=document.getElementById('spirale-pc');if(!el)return;
   el.innerHTML='';
-  // Indicatore START prima del primo slot
-  var startLbl=document.createElement('div');
-  startLbl.style.cssText='font-size:0.7rem;color:var(--gold);font-family:var(--font-title);letter-spacing:1px;margin-bottom:4px;display:inline-block';
-  startLbl.innerHTML='&#9660; START';
-  el.appendChild(startLbl);
-  el.appendChild(document.createElement('br'));
   var ferite=p.spFerite||[];
   // Rebuild slots array
   for(var s=0;s<totale;s++){
