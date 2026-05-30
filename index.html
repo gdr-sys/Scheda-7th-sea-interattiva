@@ -413,7 +413,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       Slot: <b id="sp-slot-label" style="color:var(--gold)">20</b> · modifica nelle <span style="text-decoration:underline;cursor:pointer" onclick="showPage('impostazioni',document.querySelector('.nav-tab:last-child'))">Impostazioni</span>
     </div>
     <input type="hidden" id="sp-slot" value="20">
-    <div id="spirale-pc"></div>
+    <div id="spirale-pc" style="padding-top:22px"></div>
     <div class="eff-box" id="eff-box-pc"></div>
     <div style="margin-top:10px">
       <div style="font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;font-size:0.7rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">FERITE (aggiornate automaticamente dalla spirale)</div>
@@ -1057,6 +1057,16 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     <div class="sett-row">
       <div><div class="sett-label">DURO A MORIRE</div><div class="sett-sub">Aggiunge &#9733;5 &mdash; la 4&ordf; Ferita Drammatica non uccide</div></div>
       <div class="toggle" id="dam-toggle" onclick="toggleDaM()"><div class="toggle-knob"></div></div>
+    </div>
+    <div class="sett-row" style="align-items:flex-start;gap:12px">
+      <div style="flex:1">
+        <div class="sett-label">MODALIT&Agrave; SPIRALE</div>
+        <div class="sett-sub" id="sp-modo-desc">Classica: normali e drammatiche separate</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <div id="sp-modo-classica" onclick="setSpModo('classica')" style="padding:6px 12px;border-radius:6px;border:2px solid var(--border);cursor:pointer;font-family:var(--font-title);font-size:0.7rem;letter-spacing:1px">CLASSICA</div>
+        <div id="sp-modo-hardcore" onclick="setSpModo('hardcore')" style="padding:6px 12px;border-radius:6px;border:2px solid var(--border);cursor:pointer;font-family:var(--font-title);font-size:0.7rem;letter-spacing:1px;color:var(--crimson)">HARDCORE</div>
+      </div>
     </div>
   </div>
 
@@ -2078,6 +2088,7 @@ function init(){
   updFeriteDisplay();
   syncThemeToggle();
   syncModo();
+  syncSpModo();
   updateDamIndicator();
   window._appInited=true;
   // sync sp-slot-display in settings
@@ -2096,8 +2107,9 @@ function save(){
   const p=D.p;
   if(window._appInited){
     ['giocatore','personaggio','concetto','nazione','fede','fama','background'].forEach(f=>{const e=document.getElementById('pc-'+f);if(e)p[f]=e.value;});
-    const n=D.nave;
-    ['nome','classe','origini','bonus','ricchezza','background','carico','avventure'].forEach(f=>{const e=document.getElementById('nave-'+f);if(e)n[f]=e.value;});
+    // Leggi campi nave solo se la pagina nave è attiva
+    var navePageActive=document.getElementById('page-nave')&&document.getElementById('page-nave').classList.contains('active');
+    if(navePageActive){const n=D.nave;['nome','classe','origini','bonus','ricchezza','background','carico','avventure'].forEach(f=>{const e=document.getElementById('nave-'+f);if(e)n[f]=e.value;});}
   }
   localStorage.setItem('7sea',JSON.stringify(D));
   if(typeof scheduleCloudSync==='function')scheduleCloudSync();
@@ -2157,6 +2169,19 @@ function syncThemeToggle(){
   var ts=document.getElementById('tog-theme-sett');
   if(ts)ts.classList.toggle('on',D.theme==='dark');
 }
+function setSpModo(m){
+  D.p.spModo=m||'classica';
+  var bc=document.getElementById('sp-modo-classica');
+  var bh=document.getElementById('sp-modo-hardcore');
+  if(bc){bc.style.borderColor=m==='classica'?'var(--gold)':'var(--border)';bc.style.background=m==='classica'?'rgba(200,160,60,0.1)':'';}
+  if(bh){bh.style.borderColor=m==='hardcore'?'var(--crimson)':'var(--border)';bh.style.background=m==='hardcore'?'rgba(139,32,32,0.15)':'';}
+  var desc=document.getElementById('sp-modo-desc');
+  if(desc)desc.textContent=m==='hardcore'
+    ?'Hardcore: ogni Ferita Drammatica = 5 ferite normali'
+    :'Classica: normali e drammatiche separate';
+  renderSpiralePC();save();
+}
+function syncSpModo(){setSpModo(D.p.spModo||'classica');}
 function changeSpSlot(d){
   var p=D.p,cur=p.spSlot||20;
   p.spSlot=Math.max(4,Math.min(60,cur+d));
@@ -2207,7 +2232,7 @@ function clearAvatar(){D.p.avatar='';document.getElementById('av-img').style.dis
 // PUNTI EROE
 function renderPE(){const m=D.p.peMax||3,c=D.p.pe||0;let h='';for(let i=0;i<m;i++)h+=`<div class="pe-slot${i<c?' filled':''}" onclick="togPE(${i})">&#9733;<\/div>`;document.getElementById('pe-track').innerHTML=h;document.getElementById('pe-status').textContent=c+'/'+m;}
 function togPE(i){const c=D.p.pe||0;D.p.pe=(i<c)?i:i+1;renderPE();save();}
-function changePeMax(d){D.p.peMax=Math.max(1,Math.min(10,(D.p.peMax||3)+d));if(D.p.pe>D.p.peMax)D.p.pe=D.p.peMax;renderPE();var s=document.getElementById('pe-max-sett');if(s)s.textContent=D.p.peMax;save();}
+function changePeMax(d){D.p.peMax=Math.max(1,Math.min(20,(D.p.peMax||3)+d));if(D.p.pe>D.p.peMax)D.p.pe=D.p.peMax;renderPE();var s=document.getElementById('pe-max-sett');if(s)s.textContent=D.p.peMax;save();}
 
 // RICCHEZZA
 function renderRic(){const m=D.p.ricMax||5,c=D.p.ric||0;let h='';for(let i=0;i<m;i++)h+=`<div class="ric-coin${i<c?' filled':''}" onclick="togRic(${i})">&#128312;<\/div>`;document.getElementById('ric-track').innerHTML=h;document.getElementById('ric-status').textContent=c+'/'+m;}
@@ -2332,26 +2357,55 @@ function getStarIdx(total){
 }
 
 function renderSpiralePC(){
-  const p=D.p;
-  const base=D.p.spSlot||parseInt((document.getElementById('sp-slot')||{value:'20'}).value)||20;
-  p.spSlot=base;
-  const dam=p.dam||false;
-  // DaM aggiunge sempre e solo 5 slot fissi — il campo input è il totale BASE
-  const tot=base+(dam?5:0);
-  if(!p.spFerite||p.spFerite.length!==tot){
-    const old=p.spFerite||[];
-    p.spFerite=Array(tot).fill(false);
-    old.forEach((v,i)=>{if(i<tot)p.spFerite[i]=v;});
+  var p=D.p;
+  var base=D.p.spSlot||parseInt((document.getElementById('sp-slot')||{value:'20'}).value)||20;
+  var totale=base+(p.dam?5:0);
+  var hardcore=p.spModo==='hardcore';
+  var el=document.getElementById('spirale-pc');if(!el)return;
+  el.innerHTML='';
+  var ferite=p.spFerite||[];
+  // Rebuild slots array
+  for(var s=0;s<totale;s++){
+    var fd=ferite[s];
+    var tipo=fd?fd.tipo:'';
+    var div=document.createElement('div');
+    div.className='sp-slot'+(tipo?' sp-'+tipo:'');
+    div.dataset.s=s;
+    // In hardcore: dramatic slots are grouped visually in 5s
+    if(hardcore&&tipo==='d'){
+      div.title='Ferita Drammatica (Hardcore: vale 5 ferite)';
+      div.style.outline='2px solid var(--crimson)';
+    }
+    div.onclick=function(){clickSpSlot(parseInt(this.dataset.s));};
+    // Indicatore di inizio spirale sul primo slot
+    if(s===0){
+      var arrow=document.createElement('div');
+      arrow.style.cssText='position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:0.7rem;color:var(--gold);font-family:var(--font-title);white-space:nowrap;pointer-events:none';
+      arrow.innerHTML='&#9660; START';
+      arrow.style.color='var(--gold)';
+      div.style.position='relative';
+      div.appendChild(arrow);
+    }
+    el.appendChild(div);
   }
-  const si=getStarIdx(tot);
-  document.getElementById('spirale-pc').innerHTML=buildSpiral(tot,p.spFerite,si,'togWPC','var(--crimson)');
-  // Update counter label
-  const lbl=document.getElementById('sp-slot-label');
-  if(lbl) lbl.textContent=dam?`Base ${base} + 5 DaM = ${tot} totali`:`${base} slot`;
-  renderEffPC(si,dam);
-  autoCountFerite();
-  save();
+  // Hardcore: show equivalent normal wounds count
+  if(hardcore){
+    var normali=(ferite.filter(function(f){return f&&f.tipo==='n';}).length);
+    var dramm=(ferite.filter(function(f){return f&&f.tipo==='d';}).length);
+    var totFerite=normali+dramm*5;
+    var info=document.getElementById('sp-info-hardcore');
+    if(!info){
+      info=document.createElement('div');info.id='sp-info-hardcore';
+      info.style.cssText='font-size:0.72rem;color:var(--crimson);font-family:var(--font-title);margin-top:4px';
+      el.parentNode.insertBefore(info,el.nextSibling);
+    }
+    info.textContent='Hardcore: '+normali+' normali + '+dramm+' dramm. = '+totFerite+' ferite effettive';
+  } else {
+    var old=document.getElementById('sp-info-hardcore');if(old)old.remove();
+  }
+  updFeriteDisplay();
 }
+
 function togWPC(i){
   // Clic su pallino i: riempie tutti 0..i, svuota i..fine
   const p=D.p, f=p.spFerite, n=f.length;
@@ -2466,9 +2520,10 @@ function selectStrType(type){
   if(libera){
     // Toggle: se già attiva, disattiva; altrimenti attiva
     if(!D.str.tipiAttivi)D.str.tipiAttivi=[];
-    var idx=D.str.tipiAttivi.indexOf(type);
-    if(idx>=0){
-      D.str.tipiAttivi.splice(idx,1); // rimuovi
+    var idx2=D.str.tipiAttivi.indexOf(type);
+    var wasNew=idx2<0;
+    if(idx2>=0){
+      D.str.tipiAttivi.splice(idx2,1); // rimuovi
     } else {
       D.str.tipiAttivi.push(type); // aggiungi
     }
@@ -2476,6 +2531,16 @@ function selectStrType(type){
     D.str.tipoRef=D.str.tipiAttivi[0]||'';
     renderStrButtons();
     renderStrSections();
+    // Render la sezione appena aggiunta se era nuova
+    if(wasNew){
+      var renderMap={
+        arcanance:renderArcanance,cantus:renderCantus,estirpe:renderEstirpe,
+        risveglio:renderRisveglio,mouo:renderMouo,sognatore:renderSognatore,
+        babayaga:renderBabaYaga,hexenwerk:renderHexenwerk,glamour:renderGlamour,
+        porte:renderPorte,matushki:renderMatushki,sanderis:renderSanderis,sorte:renderSorte
+      };
+      if(renderMap[type])renderMap[type]();
+    }
   } else {
     // Modalità creazione: una sola stregoneria
     D.str.tipoRef=type;
