@@ -413,7 +413,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       Slot: <b id="sp-slot-label" style="color:var(--gold)">20</b> · modifica nelle <span style="text-decoration:underline;cursor:pointer" onclick="showPage('impostazioni',document.querySelector('.nav-tab:last-child'))">Impostazioni</span>
     </div>
     <input type="hidden" id="sp-slot" value="20">
-    <div style="font-size:0.7rem;color:var(--gold);font-family:var(--font-title);letter-spacing:1px;margin-bottom:4px">&#9660; START</div>
     <div id="spirale-pc"></div>
     <div class="eff-box" id="eff-box-pc"></div>
     <div style="margin-top:10px">
@@ -2311,6 +2310,11 @@ function buildSpiral(total,ferite,starIdx,clickFn,color){
   // Guida cerchio
   const r=126;
   s+=`<circle cx="150" cy="150" r="${r}" fill="none" stroke="var(--border)" stroke-width="1" opacity="0.2"/>`;
+  // Indicatore START vicino allo slot 0 (top center)
+  if(clickFn==='togWPC'){
+    s+=`<text x="150" y="8" text-anchor="middle" font-family="var(--font-title)" font-size="9" fill="var(--gold)" letter-spacing="1">START<\/text>`;
+    s+=`<polygon points="150,14 146,10 154,10" fill="var(--gold)"/>`;
+  }
 
   // Slot nel cerchio
   for(let i=0;i<ringSlots;i++){
@@ -2389,16 +2393,23 @@ function renderSpiralePC(){
 }
 
 function togWPC(i){
-  // Clic su pallino i: riempie tutti 0..i, svuota i..fine
   const p=D.p, f=p.spFerite, n=f.length;
-  const wasAllFilled=f.slice(0,i+1).every(v=>v);
-  if(wasAllFilled){
-    // Clic su uno già pieno: svuota da i in poi (lascia 0..i-1 pieni)
-    for(let j=i;j<n;j++) f[j]=false;
+  const si=getStarIdx(n); // indici stelle (ferite drammatiche)
+  const isStar=si.includes(i);
+  const classica=p.spModo!=='hardcore';
+
+  if(classica && isStar){
+    // Modalità classica: stella = ferita drammatica indipendente, toggle semplice
+    f[i]=!f[i];
   } else {
-    // Clic su uno vuoto: riempie fino a i incluso
-    for(let j=0;j<=i;j++) f[j]=true;
-    for(let j=i+1;j<n;j++) f[j]=false;
+    // Hardcore o ferita normale: riempie in sequenza da 0 a i
+    const wasAllFilled=f.slice(0,i+1).every(function(v){return v;});
+    if(wasAllFilled){
+      for(let j=i;j<n;j++) f[j]=false;
+    } else {
+      for(let j=0;j<=i;j++) f[j]=true;
+      for(let j=i+1;j<n;j++) f[j]=false;
+    }
   }
   renderSpiralePC();save();
 }
