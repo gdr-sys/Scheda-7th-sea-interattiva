@@ -3686,7 +3686,8 @@ function renderStrMacro(){
 }
 function togSM(h){h.nextElementSibling.classList.toggle('open');}
 function addStrMacro(){if(!D.str.macro)D.str.macro=[];D.str.macro.push({nome:'Potere '+(D.str.macro.length+1),testo:''});renderStrMacro();save();}
-function delSM(i){D.str.macro.splice(i,1);renderStrMacro();save();}
+function delStrMacro(i){D.str.macro.splice(i,1);renderStrMacro();save();}
+function delSM(i){delStrMacro(i);}
 function updSM(i,f,v){D.str.macro[i][f]=v;if(f==='nome'){updHeaderText('str-macro-list',i,'.smacro-nd',v||'Potere '+(i+1));save();}else save();}
 
 // ARCANI
@@ -3711,7 +3712,7 @@ function renderArcani(){
     return '<div class="arcano-item">'
       +'<div class="arcano-header arc-toggle">'
       +'<div style="display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap">'
-      +'<span>'+escH(a.nome||'Arcano')+'<\/span>'
+      +'<span class="arc-nome-display">'+escH(a.nome||'Arcano')+'<\/span>'
       +'<span class="'+bc+'">'+bl+'<\/span>'
       +(a.manuale&&a.manuale!=='7th Sea'?'<span style="font-size:0.62rem;padding:2px 4px;border-radius:3px;background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid var(--gold)">'+a.manuale+'<\/span>':'')
       +(isHB?'<span class="homebrew-badge">HB<\/span>':'')
@@ -3745,7 +3746,7 @@ function renderArcani(){
   };
 }
 function delArc(i){D.p.arcani.splice(i,1);renderArcani();save();}
-function updArc(i,f,v){D.p.arcani[i][f]=v;if(f==='nome'){updHeaderText('arcani-list',i,'.entry-title',v||'Arcano '+(i+1));save();}else if(f==='tipo'){renderArcani();}else save();}
+function updArc(i,f,v){D.p.arcani[i][f]=v;if(f==='nome'){var list=document.getElementById('arcani-list');if(list){var items=list.querySelectorAll('.arcano-item');if(items[i]){var hdr=items[i].querySelector('.arc-nome-display');if(hdr)hdr.textContent=v||'Arcano '+(i+1);}}save();}else if(f==='tipo'){renderArcani();}else save();}
 function addArcanoHB(){if(!D.p.arcani)D.p.arcani=[];D.p.arcani.push({nome:'Nuovo Arcano',tipo:'Virtu',desc:'',note:'',homebrew:true});renderArcani();save();}
 function openArcaniModal(){document.getElementById('arcani-modal').classList.add('open');document.getElementById('a-search').value='';renderAList();}
 function closeAModal(){document.getElementById('arcani-modal').classList.remove('open');}
@@ -3786,7 +3787,7 @@ function renderVantaggi(){
     return '<div class="vantaggio-item">'
       +'<div class="vantaggio-header v-toggle">'
       +'<div style="display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap">'
-      +'<span>'+escH(x.nome||'Vantaggio')+'<\/span>'+tagsPart+hbBadge
+      +'<span class="v-nome-display">'+escH(x.nome||'Vantaggio')+'<\/span>'+tagsPart+hbBadge
       +'<\/div>'
       +'<div style="display:flex;gap:6px;align-items:center">'
       +'<span style="font-size:0.7rem;color:var(--text-muted)">&#9660;<\/span>'
@@ -3843,7 +3844,7 @@ function updV(i,f,v){
   D.p.vantaggi[i][f]=v;
   if(f==='nome'){
     var list=document.getElementById('vantaggi-list');
-    if(list){var cards=list.querySelectorAll('.entry-card');if(cards[i]){var hdr=cards[i].querySelector('.entry-title');if(hdr)hdr.textContent=v||'Vantaggio';}}
+    if(list){var items=list.querySelectorAll('.vantaggio-item');if(items[i]){var hdr=items[i].querySelector('.v-nome-display');if(hdr)hdr.textContent=v||'Vantaggio';}}
   }
   save();
 }
