@@ -413,7 +413,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       Slot: <b id="sp-slot-label" style="color:var(--gold)">20</b> · modifica nelle <span style="text-decoration:underline;cursor:pointer" onclick="showPage('impostazioni',document.querySelector('.nav-tab:last-child'))">Impostazioni</span>
     </div>
     <input type="hidden" id="sp-slot" value="20">
-    <div id="spirale-pc" style="padding-top:22px"></div>
+    <div id="spirale-pc"></div>
     <div class="eff-box" id="eff-box-pc"></div>
     <div style="margin-top:10px">
       <div style="font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;font-size:0.7rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">FERITE (aggiornate automaticamente dalla spirale)</div>
@@ -2363,6 +2363,12 @@ function renderSpiralePC(){
   var hardcore=p.spModo==='hardcore';
   var el=document.getElementById('spirale-pc');if(!el)return;
   el.innerHTML='';
+  // Indicatore START prima del primo slot
+  var startLbl=document.createElement('div');
+  startLbl.style.cssText='font-size:0.7rem;color:var(--gold);font-family:var(--font-title);letter-spacing:1px;margin-bottom:4px;display:inline-block';
+  startLbl.innerHTML='&#9660; START';
+  el.appendChild(startLbl);
+  el.appendChild(document.createElement('br'));
   var ferite=p.spFerite||[];
   // Rebuild slots array
   for(var s=0;s<totale;s++){
@@ -2377,15 +2383,6 @@ function renderSpiralePC(){
       div.style.outline='2px solid var(--crimson)';
     }
     div.onclick=function(){clickSpSlot(parseInt(this.dataset.s));};
-    // Indicatore di inizio spirale sul primo slot
-    if(s===0){
-      var arrow=document.createElement('div');
-      arrow.style.cssText='position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:0.7rem;color:var(--gold);font-family:var(--font-title);white-space:nowrap;pointer-events:none';
-      arrow.innerHTML='&#9660; START';
-      arrow.style.color='var(--gold)';
-      div.style.position='relative';
-      div.appendChild(arrow);
-    }
     el.appendChild(div);
   }
   // Hardcore: show equivalent normal wounds count
