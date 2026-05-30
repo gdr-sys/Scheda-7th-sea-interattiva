@@ -474,12 +474,54 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </div>
     <div class="card">
       <div class="sec-header">TEILE (INGREDIENTI SPECIALI)</div>
-      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px">Parti di cadaveri usate per potenziare gli Unguenti.</div>
-      <div class="two-col">
-        <div class="field-row"><span class="field-label">👁 Occhi</span><input class="field-input" id="hex-occhi" type="number" min="0" value="0" oninput="saveStr()" style="max-width:60px"></div>
-        <div class="field-row"><span class="field-label">🖐 Mani</span><input class="field-input" id="hex-mani" type="number" min="0" value="0" oninput="saveStr()" style="max-width:60px"></div>
-        <div class="field-row"><span class="field-label">❤ Cuori</span><input class="field-input" id="hex-cuori" type="number" min="0" value="0" oninput="saveStr()" style="max-width:60px"></div>
-        <div class="field-row"><span class="field-label">🧠 Cervelli</span><input class="field-input" id="hex-cervelli" type="number" min="0" value="0" oninput="saveStr()" style="max-width:60px"></div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px;line-height:1.5">Parti di corpi usate per potenziare gli Unguenti. Le ricette di <i>Nazioni di Théah Vol.2</i> specificano organi particolari (fegato, lingua, ecc.). Traccia le scorte generali e quelle specifiche.</div>
+
+      <!-- UMANE -->
+      <div style="font-family:var(--font-title);font-size:0.7rem;letter-spacing:2px;color:var(--crimson);margin-bottom:8px">▸ PARTI UMANE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px">
+          <div style="font-family:var(--font-title);font-size:0.65rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">🩸 DA VIVI (o appena morti)</div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">Generiche</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-vivi',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-vivi-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-vivi',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">👁 Occhi</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-occhi-v',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-occhi-v-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-occhi-v',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">❤ Cuori</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-cuori-v',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-cuori-v-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-cuori-v',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">🖐 Mani</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-mani-v',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-mani-v-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-mani-v',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">🧠 Cervelli</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-cerv-v',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-cerv-v-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-cerv-v',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">🫀 Fegati</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-feg-v',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-feg-v-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-feg-v',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:0"><span class="field-label" style="font-size:0.7rem">👅 Lingue</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-ling-v',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-ling-v-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-ling-v',1)">+</button></div></div>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px">
+          <div style="font-family:var(--font-title);font-size:0.65rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">💀 DA MORTI (cadaveri)</div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">Generiche</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-morti',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-morti-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-morti',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">👁 Occhi</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-occhi-m',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-occhi-m-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-occhi-m',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">❤ Cuori</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-cuori-m',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-cuori-m-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-cuori-m',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">🖐 Mani</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-mani-m',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-mani-m-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-mani-m',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">🧠 Cervelli</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-cerv-m',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-cerv-m-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-cerv-m',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:4px"><span class="field-label" style="font-size:0.7rem">🫀 Fegati</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-feg-m',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-feg-m-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-feg-m',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:0"><span class="field-label" style="font-size:0.7rem">👅 Lingue</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-u-ling-m',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-u-ling-m-v">0</span><button class="fc-btn" onclick="chgTeile('hex-u-ling-m',1)">+</button></div></div>
+        </div>
+      </div>
+
+      <!-- MOSTRI -->
+      <div style="font-family:var(--font-title);font-size:0.7rem;letter-spacing:2px;color:var(--gold);margin-bottom:8px">▸ PARTI DI MOSTRI / CREATURE</div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div class="field-row" style="margin-bottom:2px"><span class="field-label" style="font-size:0.7rem">🦴 Generiche</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-m-gen',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-m-gen-v">0</span><button class="fc-btn" onclick="chgTeile('hex-m-gen',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:2px"><span class="field-label" style="font-size:0.7rem">🦷 Denti/Artigli</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-m-denti',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-m-denti-v">0</span><button class="fc-btn" onclick="chgTeile('hex-m-denti',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:2px"><span class="field-label" style="font-size:0.7rem">🩸 Sangue/Linfa</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-m-sang',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-m-sang-v">0</span><button class="fc-btn" onclick="chgTeile('hex-m-sang',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:2px"><span class="field-label" style="font-size:0.7rem">🫁 Organi rari</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-m-org',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center" id="hex-m-org-v">0</span><button class="fc-btn" onclick="chgTeile('hex-m-org',1)">+</button></div></div>
+        </div>
+        <div style="margin-top:8px"><div class="field-row" style="margin-bottom:0"><span class="field-label" style="font-size:0.7rem">Note mostri</span><input class="field-input" id="hex-m-note" oninput="saveStr()" placeholder="Es. tentacolo di Kraken, corno di unicorno…" style="font-size:0.82rem"></div></div>
+      </div>
+
+      <!-- PARTI PROPRIE DELLA HEXE -->
+      <div style="font-family:var(--font-title);font-size:0.7rem;letter-spacing:2px;color:var(--text-muted);margin-bottom:6px">▸ PARTI PROPRIE (raddoppiano le dosi, non si deteriorano)</div>
+      <div style="background:rgba(139,26,26,0.06);border:1px solid rgba(139,26,26,0.2);border-radius:8px;padding:10px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div class="field-row" style="margin-bottom:2px"><span class="field-label" style="font-size:0.7rem">Sangue</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-p-sang',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center;color:var(--crimson)" id="hex-p-sang-v">0</span><button class="fc-btn" onclick="chgTeile('hex-p-sang',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:2px"><span class="field-label" style="font-size:0.7rem">Capelli</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-p-cap',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center;color:var(--crimson)" id="hex-p-cap-v">0</span><button class="fc-btn" onclick="chgTeile('hex-p-cap',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:2px"><span class="field-label" style="font-size:0.7rem">Unghie</span><div style="display:flex;align-items:center;gap:4px"><button class="fc-btn" onclick="chgTeile('hex-p-ung',-1)">−</button><span style="font-family:var(--font-title);font-weight:700;min-width:24px;text-align:center;color:var(--crimson)" id="hex-p-ung-v">0</span><button class="fc-btn" onclick="chgTeile('hex-p-ung',1)">+</button></div></div>
+          <div class="field-row" style="margin-bottom:2px"><span class="field-label" style="font-size:0.7rem">Altro</span><input class="field-input" id="hex-p-altro" oninput="saveStr()" placeholder="—" style="font-size:0.82rem"></div>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -572,18 +614,86 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         <b>Trarre</b>: richiami un Marchio Minore a te, apri un portale minuscolo. Costo: 1 Incremento.<br>
         <b>Camminare</b>: apri un portale verso un Marchio Maggiore. Costo: 1 Ferita Drammatica + 1 Incremento. Porta altri con te: +1 PE per persona.<br>
         <b>Blessure</b>: aprire un portale causa sempre Corruzione. Un Eroe soffre per risparmiare il mondo; un Malvagio fa soffrire il mondo.<br>
-        <b>Marchi mantenibili</b>: 1 Maggiore + 2 Minori per ogni grado del Vantaggio.
+        <b>Marchi mantenibili</b>: 1 Maggiore + 2 Minori <i>per ogni grado del Vantaggio Porté</i>. Puoi concentrarti su un numero di marchi pari al totale sopra — non di più.<br>
+        <div style="margin-top:8px;padding:8px;background:rgba(139,26,26,0.08);border-radius:6px;border-left:3px solid var(--crimson)">
+          <b style="color:var(--crimson)">⚠ PORTALE SENZA STREGONE DEL SANGUE</b><br>
+          Chiunque attraversi un portale Porté <i>senza essere accompagnato da uno stregone del sangue</i>, o senza esserlo lui stesso, è <b>perduto irrecuperabilmente</b>. Il personaggio è considerato morto. La scheda è distrutta. Non esistono eccezioni.
+        </div>
+        <div style="margin-top:8px;padding:8px;background:rgba(201,168,76,0.08);border-radius:6px;border-left:3px solid var(--gold)">
+          <b style="color:var(--gold)">🩸 STREGONERIA DEL SANGUE</b><br>
+          Il Porté è ereditario — segue la linea di sangue. I suoi poteri possono essere pagati anche <b>col sangue</b> (vedi sezione Pagamento col Sangue qui sotto).
+        </div>
       </div>
     </div>
+
+    <!-- Gradi vantaggio -->
+    <div class="card">
+      <div class="sec-header">GRADI DEL VANTAGGIO PORTÉ</div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px">Imposta quante volte hai il Vantaggio Porté per calcolare automaticamente i marchi mantenibili.</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+        <span style="font-family:var(--font-title);font-size:0.72rem;letter-spacing:1px;color:var(--text-muted)">GRADI PORTÉ</span>
+        <button class="fc-btn" onclick="chgPorteGradi(-1)">−</button>
+        <span style="font-family:var(--font-title);font-size:1.1rem;font-weight:700;color:var(--crimson);min-width:24px;text-align:center" id="porte-gradi-val">1</span>
+        <button class="fc-btn" onclick="chgPorteGradi(1)">+</button>
+        <span style="font-size:0.78rem;color:var(--text-muted)" id="porte-slots-info">→ max: 1 Maggiore + 2 Minori</span>
+      </div>
+      <!-- Marchio Superiore toggle -->
+      <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(201,168,76,0.08);border:1px solid var(--gold);border-radius:8px">
+        <div class="toggle" id="tog-marchio-sup" onclick="toggleMarchioSup()"><div class="toggle-knob"></div></div>
+        <div>
+          <div style="font-family:var(--font-title);font-size:0.78rem;font-weight:700;color:var(--gold)">MARCHIO SUPERIORE (sbloccabile)</div>
+          <div style="font-size:0.72rem;color:var(--text-muted)">Da Nazioni di Théah — richiede concessione del Master</div>
+        </div>
+      </div>
+      <div id="marchio-sup-section" style="display:none;margin-top:10px;padding:12px;background:var(--card2);border-radius:8px;border:1px solid var(--gold)">
+        <div style="font-family:var(--font-title);font-size:0.7rem;letter-spacing:1px;color:var(--gold);margin-bottom:8px">MARCHIO SUPERIORE — EFFETTI SPECIALI</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">Un Marchio Superiore trascende il normale Maggiore. Può avere effetti aggiuntivi o effetti che <i>sostituiscono</i> quelli originali del Porté. Annota qui cosa il Master ha concesso.</div>
+        <div class="field-row"><span class="field-label">Oggetto/Persona</span><input class="field-input" id="porte-sup-bersaglio" oninput="saveStr()" placeholder="—"></div>
+        <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">EFFETTI AGGIUNTIVI (si sommano al Porté base)</div>
+        <textarea class="field-input" id="porte-sup-aggiunti" rows="2" oninput="saveStr()" placeholder="Es. apre portali stabili, permette di trasportare più persone…"></textarea>
+        <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--crimson);margin-bottom:4px;margin-top:8px">EFFETTI SOSTITUTIVI (sostituiscono quelli originali)</div>
+        <textarea class="field-input" id="porte-sup-sostitutivi" rows="2" oninput="saveStr()" placeholder="Es. non richiede Ferita Drammatica, non causa Corruzione…" style="border-color:var(--crimson)"></textarea>
+        <!-- Walkaway -->
+        <div style="margin-top:10px;padding:10px;background:rgba(139,26,26,0.07);border-radius:6px;border:1px solid rgba(139,26,26,0.25)">
+          <div style="font-family:var(--font-title);font-size:0.72rem;letter-spacing:1px;color:var(--crimson);margin-bottom:6px">🚶 WALKAWAY (da Nazioni di Théah Vol.1)</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">Il Walkaway è la capacità dello stregone del sangue di "camminare via" da qualsiasi luogo — anche senza un Marchio Maggiore stabilito. Richiede un costo aggiuntivo stabilito dal Master. Annota le condizioni concordate.</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <input type="checkbox" id="porte-walkaway-attivo" onchange="saveStr()" style="accent-color:var(--crimson);cursor:pointer;width:16px;height:16px">
+            <label for="porte-walkaway-attivo" style="font-family:var(--font-title);font-size:0.72rem;color:var(--crimson);cursor:pointer">WALKAWAY SBLOCCATO</label>
+          </div>
+          <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">COSTO / CONDIZIONI DEL MASTER</div>
+          <textarea class="field-input" id="porte-walkaway-note" rows="2" oninput="saveStr()" placeholder="Es. costa 2 FD invece di 1, richiede sangue versato, limite di distanza…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagamento col Sangue -->
+    <div class="card" style="border:1px solid rgba(139,26,26,0.3)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:1.2rem">🩸</span>
+        <div class="sec-header" style="margin:0;flex:1">PAGAMENTO COL SANGUE</div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;line-height:1.5">
+        Le stregonerie ereditarie / del sangue (Porté, Sorte, e quelle future approvate dal Master) possono essere pagate <b>direttamente col sangue</b> — ovvero con le caselle della <b>Spirale della Morte</b> — invece che con PE o Ferite Drammatiche normali.<br>
+        <span style="color:var(--crimson);font-weight:700">Segnare caselle della Spirale in questo modo conta come subire Ferite a tutti gli effetti.</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <input type="checkbox" id="porte-sangue-attivo" onchange="saveStr()" style="accent-color:var(--crimson);cursor:pointer;width:16px;height:16px">
+        <label for="porte-sangue-attivo" style="font-family:var(--font-title);font-size:0.72rem;color:var(--crimson);cursor:pointer;letter-spacing:1px">REGOLA ATTIVA (concordata col Master)</label>
+      </div>
+      <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">CONVERSIONE / NOTE DEL MASTER</div>
+      <textarea class="field-input" id="porte-sangue-note" rows="3" oninput="saveStr()" placeholder="Es. 1 casella Spirale = 1 PE · 2 caselle = 1 FD · Solo se già ferito…"></textarea>
+    </div>
+
     <div class="card">
       <div class="sec-header">MARCHI MINORI</div>
-      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">Oggetti piccoli (spada, anello, cappello…). Permettono di Trarre l'oggetto.</div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">Oggetti piccoli (spada, anello, cappello…). Permettono di <b>Trarre</b> l'oggetto (costo: 1 Incremento).</div>
       <div id="porte-minori-list"></div>
       <button class="add-btn" onclick="addPorteMarchio('minore')" style="margin-top:8px">+ AGGIUNGI MARCHIO MINORE</button>
     </div>
     <div class="card">
       <div class="sec-header">MARCHI MAGGIORI</div>
-      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">Luoghi, persone, oggetti grandi. Permettono di Camminare (teletrasporto). Un parente di primo grado è sempre un Marchio Maggiore gratuito.</div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">Luoghi, persone, oggetti grandi. Permettono di <b>Camminare</b> (teletrasporto). Un parente di primo grado è sempre un Marchio Maggiore gratuito.</div>
       <div id="porte-maggiori-list"></div>
       <button class="add-btn" onclick="addPorteMarchio('maggiore')" style="margin-top:8px">+ AGGIUNGI MARCHIO MAGGIORE</button>
     </div>
@@ -682,20 +792,54 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         </div>
       </div>
     </div>
-    <div class="card">
-      <div class="sec-header">STAFFILATE</div>
-      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">
-        Ogni uso di una Trama aggiunge Staffilate. Troppo accumulo = il GM può impedirti risultati.
+    <div class="card" style="border:1px solid rgba(139,26,26,0.3)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:1.2rem">🩸</span>
+        <div class="sec-header" style="margin:0;flex:1">STAFFILATE &amp; SANGUE</div>
       </div>
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-        <div class="ferita-counter">
-          <span class="fc-label">STAFFILATE</span>
-          <button class="fc-btn" onclick="chgStaffilate(-1)">-</button>
-          <span class="fc-val" id="sorte-staffilate">0</span>
-          <button class="fc-btn" onclick="chgStaffilate(1)">+</button>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px;line-height:1.5">
+        Il Sorte è ereditario — segue la linea di sangue Vodacce. Come tutte le stregonerie del sangue, i suoi costi possono essere pagati <b>col sangue stesso</b>, ovvero con le caselle della <b>Spirale della Morte</b>.<br>
+        <span style="color:var(--crimson);font-weight:700">Solo se il Master ha abilitato la regola.</span>
+      </div>
+
+      <!-- Staffilate -->
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px">
+        <div style="font-family:var(--font-title);font-size:0.7rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px">STAFFILATE ACCUMULATE</div>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div class="ferita-counter">
+            <button class="fc-btn" onclick="chgStaffilate(-1)">−</button>
+            <span class="fc-val" id="sorte-staffilate">0</span>
+            <button class="fc-btn" onclick="chgStaffilate(1)">+</button>
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-muted);line-height:1.5">
+            Rimuovi pagando <b>Ferite = Staffilate presenti</b><br>oppure <b>1 Punto Pericolo/Staffilata</b> al GM
+          </div>
         </div>
-        <div style="font-size:0.78rem;color:var(--text-muted);line-height:1.5">
-          Rimuovi pagando <b>Ferite = Staffilate presenti</b><br>oppure <b>1 Punto Pericolo/Staffilata</b> al GM
+      </div>
+
+      <!-- Pagamento col Sangue -->
+      <div style="padding:12px;background:rgba(139,26,26,0.05);border-radius:8px;border:1px dashed rgba(139,26,26,0.3)">
+        <div style="font-family:var(--font-title);font-size:0.72rem;letter-spacing:1px;color:var(--crimson);margin-bottom:8px">🩸 PAGAMENTO COL SANGUE / SPIRALE</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">
+          Invece di spendere PE o accumulare Staffilate, la Strega può pagare <b>segnando caselle della Spirale della Morte</b> — è letteralmente sacrificare la propria vita per il potere.<br>
+          Valido anche per le Staffilate: segnando sangue si possono rimuovere Staffilate accumulate.
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <input type="checkbox" id="sorte-sangue-attivo" onchange="saveStr()" style="accent-color:var(--crimson);cursor:pointer;width:16px;height:16px">
+          <label for="sorte-sangue-attivo" style="font-family:var(--font-title);font-size:0.72rem;color:var(--crimson);cursor:pointer;letter-spacing:1px">REGOLA ATTIVA (concordata col Master)</label>
+        </div>
+        <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">CONVERSIONE / NOTE DEL MASTER</div>
+        <textarea class="field-input" id="sorte-sangue-note" rows="2" oninput="saveStr()" placeholder="Es. 1 casella = rimuove 1 Staffilata · 2 caselle = 1 PE risparmiato · solo se già ferita…"></textarea>
+
+        <!-- Sangue versato sessione -->
+        <div style="margin-top:10px">
+          <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">SANGUE VERSATO (questa sessione)</div>
+          <div class="ferita-counter">
+            <button class="fc-btn" onclick="chgSorteSangue(-1)">−</button>
+            <span class="fc-val" id="sorte-sangue-val" style="color:var(--crimson)">0</span>
+            <button class="fc-btn" onclick="chgSorteSangue(1)">+</button>
+            <span class="fc-label">caselle Spirale</span>
+          </div>
         </div>
       </div>
     </div>
@@ -775,6 +919,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         Costo attivazione: <b>1 PE</b>. Se durante Seq. d'Azione: anche <b>1 Incremento</b>.<br>
         <b>Lezioni Minori:</b> max 1×/Scena. <b>Lezioni Maggiori:</b> max 1×/Episodio.<br>
         <b>Lezioni Opposte:</b> un Estirpeador può invocare effetti della Lezione Minore dell'elemento opposto ma contrae un debito (appare scritto tra le fiamme/sabbia — il GM stabilisce cosa deve fare per saldarlo).
+        <div style="margin-top:8px;padding:8px;background:rgba(139,26,26,0.07);border-radius:6px;border-left:3px solid var(--crimson)">
+          <b style="color:var(--crimson)">🩸 ESTIRPE DE LUZ — CONDIZIONE DEL SANGUE</b><br>
+          L'<i>Estirpe de Luz</i> (fuoco della luce) funziona in modo contrario: la magia si attiva <b>solo quando l'Eroe è già ferito</b>, dopo aver subito Ferite, o se si fa del male volontariamente. A piena salute, senza alcuna ferita, il potere è inaccessibile — a meno che l'Eroe non si infligga volontariamente una lesione.
+        </div>
       </div>
     </div>
     <div class="card">
@@ -897,49 +1045,189 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 <!-- ===== NAVE ===== -->
 <div class="page" id="page-nave">
+
+  <!-- IDENTITÀ NAVE -->
   <div class="card">
-    <div class="sec-header">NAVE</div>
+    <div class="sec-header">LA NAVE</div>
     <div class="field-row"><span class="field-label">Nome</span><input class="field-input" id="nave-nome" oninput="save()" placeholder="—"></div>
-    <div class="field-row"><span class="field-label">Classe</span><input class="field-input" id="nave-classe" oninput="save()" placeholder="—"></div>
-    <div class="field-row"><span class="field-label">Origini</span><input class="field-input" id="nave-origini" oninput="save()" placeholder="—"></div>
-    <div class="field-row"><span class="field-label">Bonus</span><input class="field-input" id="nave-bonus" oninput="save()" placeholder="—"></div>
-    <div class="field-row"><span class="field-label">Ricchezza</span><input class="field-input" id="nave-ricchezza" oninput="save()" placeholder="—"></div>
+    <div class="field-row">
+      <span class="field-label">Classe</span>
+      <select class="field-input" id="nave-classe" onchange="onNaveClasseChange();save()" style="font-family:var(--font-body)">
+        <option value="">— Scegli —</option>
+        <option value="Brigantino">Brigantino</option>
+        <option value="Brigantino a Tre Alberi">Brigantino a Tre Alberi</option>
+        <option value="Caracca">Caracca</option>
+        <option value="Fluyt">Fluyt</option>
+        <option value="Fregata">Fregata</option>
+        <option value="Galeone">Galeone</option>
+        <option value="Man-of-War">Man-of-War</option>
+        <option value="Scuna">Scuna</option>
+        <option value="Altra">Altra (vedi note)</option>
+      </select>
+    </div>
+    <div id="nave-classe-desc" style="font-size:0.78rem;color:var(--text-muted);line-height:1.5;padding:8px 10px;background:var(--card2);border-radius:6px;margin-bottom:8px;display:none"></div>
+    <div class="field-row">
+      <span class="field-label">Origini</span>
+      <select class="field-input" id="nave-origini" onchange="onNaveOriginiChange();save()" style="font-family:var(--font-body)">
+        <option value="">— Scegli —</option>
+        <option value="Avalon">Avalon (+2 Dadi Bonus velocità/manovrabilità)</option>
+        <option value="Castille">Castille (+1 Colpo prima di Colpo Critico)</option>
+        <option value="Eisen">Eisen (+5 Equipaggio, diviso in 3 Ciurme)</option>
+        <option value="Montaigne">Montaigne (+2 Dadi Bonus Rischi sociali)</option>
+        <option value="Sarmatia">Sarmatia (Background aggiuntivo)</option>
+        <option value="Ussura">Ussura (+2 Dadi Bonus in tempesta/acque pericolose)</option>
+        <option value="Vestenmennavenjar">Vestenmennavenjar (ottieni tutta la Ricchezza in abbordaggio)</option>
+        <option value="Vodacce">Vodacce (Carico 3 invece di 2)</option>
+        <option value="Esotica">Esotica (+1 Ricchezza vendendo beni stranieri)</option>
+      </select>
+    </div>
+    <div id="nave-origini-desc" style="font-size:0.78rem;color:var(--text-muted);line-height:1.5;padding:8px 10px;background:var(--card2);border-radius:6px;margin-bottom:8px;display:none"></div>
+    <div class="field-row"><span class="field-label">Note classe/origini</span><input class="field-input" id="nave-classe-note" oninput="save()" placeholder="—"></div>
   </div>
+
+  <!-- STATISTICHE NAVE -->
+  <div class="card">
+    <div class="sec-header">STATISTICHE</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <!-- Colpi -->
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:2px;color:var(--text-muted);margin-bottom:8px">COLPI</div>
+        <div style="font-family:var(--font-title);font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">Max 5 prima di Colpo Critico</div>
+        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap" id="nave-colpi-track"></div>
+      </div>
+      <!-- Colpi Critici -->
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:2px;color:var(--text-muted);margin-bottom:8px">COLPI CRITICI</div>
+        <div style="font-family:var(--font-title);font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">Max 4 prima di affondarsi</div>
+        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap" id="nave-colpi-critici-track"></div>
+      </div>
+    </div>
+    <!-- Stato nave -->
+    <div id="nave-stato-box" style="display:none;padding:10px 14px;border-radius:8px;font-family:var(--font-title);font-size:0.8rem;font-weight:700;letter-spacing:1px;text-align:center;margin-bottom:10px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <!-- Ricchezza -->
+      <div>
+        <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">RICCHEZZA IN TESORERIA</div>
+        <div class="ferita-counter">
+          <button class="fc-btn" onclick="chgNaveRicchezza(-1)">−</button>
+          <span class="fc-val" id="nave-ric-val">0</span>
+          <button class="fc-btn" onclick="chgNaveRicchezza(1)">+</button>
+          <span class="fc-label">monete</span>
+        </div>
+      </div>
+      <!-- Carico -->
+      <div>
+        <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">CARICO ATTUALE / MAX</div>
+        <div class="ferita-counter">
+          <button class="fc-btn" onclick="chgNaveCaricoAtt(-1)">−</button>
+          <span class="fc-val" id="nave-carico-att">0</span>
+          <span class="fc-label">/ </span>
+          <button class="fc-btn" onclick="chgNaveCaricoMax(-1)">−</button>
+          <span class="fc-val" id="nave-carico-max">2</span>
+          <button class="fc-btn" onclick="chgNaveCaricoMax(1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CIURME -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="sec-header" style="cursor:pointer;border-radius:12px 12px 0 0;margin:0" onclick="togCard(this)">CIURME &amp; FORZA ▾</div>
+    <div class="card-body" style="padding:16px;display:none">
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;line-height:1.5">La Ciurma agisce come una Squadra di Sgherri. Ogni Ferita subita riduce la Forza di 1.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div>
+          <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">FORZA TOTALE</div>
+          <div class="ferita-counter">
+            <button class="fc-btn" onclick="chgCiurmeForza(-1)">−</button>
+            <span class="fc-val" id="ciurme-forza-val">10</span>
+            <button class="fc-btn" onclick="chgCiurmeForza(1)">+</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">N. CIURME</div>
+          <div class="ferita-counter">
+            <button class="fc-btn" onclick="chgNCiurme(-1)">−</button>
+            <span class="fc-val" id="n-ciurme-val">1</span>
+            <button class="fc-btn" onclick="chgNCiurme(1)">+</button>
+            <span class="fc-label">max 2</span>
+          </div>
+        </div>
+      </div>
+      <!-- Ciurme individuali -->
+      <div id="ciurme-dettaglio"></div>
+      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:8px;font-family:var(--font-title)">Clicca le caselle per segnare le Ferite all'equipaggio</div>
+      <div class="ciurme-track" id="ciurme-track" style="margin-top:8px"></div>
+      <div style="margin-top:8px"><div class="field-row"><span class="field-label">Slot totali</span><input class="field-input" id="ciurme-totale" type="number" oninput="renderCiurme()" placeholder="10" style="max-width:80px"></div></div>
+    </div>
+  </div>
+
+  <!-- BACKGROUND NAVE -->
   <div class="card" style="padding:0;overflow:hidden">
     <div class="sec-header" style="cursor:pointer;border-radius:12px 12px 0 0;margin:0" onclick="togCard(this)">BACKGROUND NAVE ▾</div>
     <div class="card-body" style="padding:16px;display:none">
-      <textarea class="field-input" id="nave-background" rows="5" oninput="save()" placeholder="Storia e descrizione…"></textarea>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;line-height:1.5">Ogni Eroe aggiunge un Background alla storia della nave (vantaggio Sposato al Mare → pag. 150).</div>
+      <div id="nave-backgrounds-list"></div>
+      <button class="add-btn" onclick="addNaveBackground()" style="margin-top:8px">+ AGGIUNGI BACKGROUND</button>
     </div>
   </div>
-  <div class="card"><div class="sec-header">EQUIPAGGIO</div>
-    <div id="equipaggio-list"></div>
-    <button class="add-btn" onclick="addEq()" style="margin-top:8px">+ AGGIUNGI MEMBRO</button>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <div class="sec-header" style="cursor:pointer;border-radius:12px 12px 0 0;margin:0" onclick="togCard(this)">CARICO ▾</div>
-    <div class="card-body" style="padding:16px;display:none">
-      <textarea class="field-input" id="nave-carico" rows="4" oninput="save()" placeholder="—"></textarea>
-    </div>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <div class="sec-header" style="cursor:pointer;border-radius:12px 12px 0 0;margin:0" onclick="togCard(this)">CIURME ▾</div>
-    <div class="card-body" style="padding:16px;display:none">
-      <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:6px">Clicca per segnare le perdite</div>
-      <div class="ciurme-track" id="ciurme-track"></div>
-      <div style="margin-top:8px"><div class="field-row"><span class="field-label">Totale</span><input class="field-input" id="ciurme-totale" type="number" oninput="renderCiurme()" placeholder="20" style="max-width:80px"></div></div>
-    </div>
-  </div>
+
+  <!-- AVVENTURE NAVE -->
   <div class="card" style="padding:0;overflow:hidden">
     <div class="sec-header" style="cursor:pointer;border-radius:12px 12px 0 0;margin:0" onclick="togCard(this)">AVVENTURE ▾</div>
     <div class="card-body" style="padding:16px;display:none">
-      <textarea class="field-input" id="nave-avventure" rows="5" oninput="save()" placeholder="—"></textarea>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;line-height:1.5">Completare un'Avventura durante il gioco dà alla Nave un bonus o capacità. Ogni Avventura si ottiene solo una volta.</div>
+      <div id="nave-avventure-list"></div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="add-btn" onclick="openNaveAvvModal()">+ DA LISTA MANUALE</button>
+        <button class="add-btn" onclick="addNaveAvvHB()" style="background:var(--gold);color:#1a1209">+ HOMEBREW</button>
+      </div>
     </div>
   </div>
+
+  <!-- EQUIPAGGIO UFFICIALI -->
+  <div class="card"><div class="sec-header">UFFICIALI &amp; EQUIPAGGIO</div>
+    <div id="equipaggio-list"></div>
+    <button class="add-btn" onclick="addEq()" style="margin-top:8px">+ AGGIUNGI MEMBRO</button>
+  </div>
+
+  <!-- CARICO -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="sec-header" style="cursor:pointer;border-radius:12px 12px 0 0;margin:0" onclick="togCard(this)">CARICO ▾</div>
+    <div class="card-body" style="padding:16px;display:none">
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">Ogni Carico trasportato con successo vale 1 Ricchezza. Carichi molto richiesti o a lunga distanza possono valere di più.</div>
+      <div id="nave-carichi-list"></div>
+      <button class="add-btn" onclick="addCarico()" style="margin-top:8px">+ AGGIUNGI CARICO</button>
+    </div>
+  </div>
+
+  <!-- SPIRALE NAVE -->
   <div class="card" style="padding:0;overflow:hidden">
     <div class="sec-header" style="cursor:pointer;border-radius:12px 12px 0 0;margin:0" onclick="togCard(this)">SPIRALE NAVE ▾</div>
     <div class="card-body" style="padding:16px;display:none">
       <div id="spirale-nave"></div>
     </div>
+  </div>
+
+  <!-- NOTE NAVE -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="sec-header" style="cursor:pointer;border-radius:12px 12px 0 0;margin:0" onclick="togCard(this)">NOTE GENERALI ▾</div>
+    <div class="card-body" style="padding:16px;display:none">
+      <textarea class="field-input" id="nave-note-generali" rows="5" oninput="save()" placeholder="Note libere sulla nave…"></textarea>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL AVVENTURE NAVE -->
+<div class="select-modal" id="nave-avv-modal">
+  <div class="select-modal-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;position:sticky;top:0;background:var(--card);z-index:1;padding-bottom:8px;border-bottom:1px solid var(--border)">
+      <h2 style="margin:0">AVVENTURE DELLA NAVE</h2>
+      <button class="modal-btn secondary" onclick="closeNaveAvvModal()" style="padding:6px 14px">✕ CHIUDI</button>
+    </div>
+    <input class="search-input" id="nave-avv-search" placeholder="Cerca avventura…" oninput="renderNaveAvvModalList()">
+    <div id="nave-avv-modal-list"></div>
   </div>
 </div>
 
@@ -2117,12 +2405,28 @@ function save(){
 function saveStr(){
   const s=D.str;
   ['tipo','nazione','note'].forEach(f=>{const e=document.getElementById('str-'+f);if(e)s[f]=e.value;});
-  ['occhi','mani','cuori','cervelli'].forEach(p=>{const e=document.getElementById('hex-'+p);if(e)s['hex_'+p]=parseInt(e.value)||0;});
+  // Vecchi campi hexenwerk (rimossi dal DOM ma mantenuti per compatibilità JSON)
+  const cv2=document.getElementById('str-cavaliere');if(cv2)s.cavaliere=cv2.value;
+  const cu=document.getElementById('str-custom-note');if(cu)s.customNote=cu.value;
   const sne=document.getElementById('san-nome-dievas');if(sne)s.sanNomeDievas=sne.value;
   const sp=document.getElementById('san-patti');if(sp)s.sanPatti=parseInt(sp.value)||0;
   const std=document.getElementById('san-tipo-dievas');if(std)s.sanTipoDievas=std.value;
-  const cv=document.getElementById('str-cavaliere');if(cv)s.cavaliere=cv.value;
-  const cu=document.getElementById('str-custom-note');if(cu)s.customNote=cu.value;
+  // Porté nuovi campi
+  var pgv=document.getElementById('porte-gradi-val');if(pgv)s.porteGradi=parseInt(pgv.textContent)||1;
+  var psb=document.getElementById('porte-sup-bersaglio');if(psb)s.porteSupBersaglio=psb.value;
+  var psa2=document.getElementById('porte-sup-aggiunti');if(psa2)s.porteSupAggiunti=psa2.value;
+  var pss=document.getElementById('porte-sup-sostitutivi');if(pss)s.porteSupSostitutivi=pss.value;
+  var pwa=document.getElementById('porte-walkaway-attivo');if(pwa)s.walkawayAttivo=pwa.checked;
+  var pwn=document.getElementById('porte-walkaway-note');if(pwn)s.walkawayNote=pwn.value;
+  var psa3=document.getElementById('porte-sangue-attivo');if(psa3)s.porteSangueAttivo=psa3.checked;
+  var psn=document.getElementById('porte-sangue-note');if(psn)s.porteSangueNote=psn.value;
+  // Sorte sangue
+  var ssa=document.getElementById('sorte-sangue-attivo');if(ssa)s.sorteSangueAttivo=ssa.checked;
+  var ssn2=document.getElementById('sorte-sangue-note');if(ssn2)s.sorteSangueNote=ssn2.value;
+  // Nave note generali
+  var nng=document.getElementById('nave-note-generali');if(nng)D.nave.noteGenerali=nng.value;
+  // Nave classe note
+  var ncn=document.getElementById('nave-classe-note');if(ncn)D.nave.classeNote=ncn.value;
   localStorage.setItem('7sea',JSON.stringify(D));
 }
 
@@ -2578,7 +2882,20 @@ function renderStrSections(){
 // HEXENWERK
 function renderHexenwerk(){
   const s=D.str;
-  ['occhi','mani','cuori','cervelli'].forEach(p=>{const e=document.getElementById('hex-'+p);if(e)e.value=s['hex_'+p]||0;});
+  // Teile nuovi
+  loadTeile();
+  // Note speciali
+  var mn=document.getElementById('hex-m-note');if(mn)mn.value=(s.teile&&s.teile['hex-m-note-txt'])||'';
+  var pa=document.getElementById('hex-p-altro');if(pa)pa.value=(s.teile&&s.teile['hex-p-altro-txt'])||'';
+  // input notes hook
+  ['hex-m-note','hex-p-altro'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.oninput=function(){
+      if(!D.str.teile)D.str.teile={};
+      D.str.teile[id==='hex-m-note'?'hex-m-note-txt':'hex-p-altro-txt']=this.value;
+      save();
+    };}
+  });
   // Unguenti
   const ul=document.getElementById('hex-unguenti-list');
   if(ul) ul.innerHTML=(s.hexUnguenti||[]).map((u,i)=>`
@@ -2750,6 +3067,8 @@ function updGesa(i,f,v){if(!D.str.gesa[i])return;D.str.gesa[i][f]=v;save();}
 // PORTE
 function renderPorte(){
   var s=D.str;
+  // Carica campi extra (gradi, marchio sup, walkaway, sangue)
+  loadPorteExtra();
   ['minore','maggiore'].forEach(function(tipo){
     var listId=tipo==='minore'?'porte-minori-list':'porte-maggiori-list';
     var list=document.getElementById(listId);if(!list)return;
@@ -2935,6 +3254,8 @@ function chgSanCorr(d){D.str.sanCorruzione=Math.max(0,(D.str.sanCorruzione||0)+d
 function renderSorte(){
   var s=D.str;
   var se=document.getElementById('sorte-staffilate');if(se)se.textContent=s.sorteStaffilate||0;
+  // Carica campi sangue
+  loadSorteExtra();
   var tl=document.getElementById('sorte-trame-list');
   if(tl){
     tl.innerHTML='';
@@ -3008,6 +3329,75 @@ function renderSorte(){
   }
 }
 function chgStaffilate(d){D.str.sorteStaffilate=Math.max(0,(D.str.sorteStaffilate||0)+d);const e=document.getElementById('sorte-staffilate');if(e)e.textContent=D.str.sorteStaffilate;save();}
+function chgSorteSangue(d){D.str.sorteSangue=Math.max(0,(D.str.sorteSangue||0)+d);const e=document.getElementById('sorte-sangue-val');if(e)e.textContent=D.str.sorteSangue;save();}
+
+// PORTE — gradi e marchio superiore
+function chgPorteGradi(d){
+  D.str.porteGradi=Math.max(1,Math.min(4,(D.str.porteGradi||1)+d));
+  var e=document.getElementById('porte-gradi-val');if(e)e.textContent=D.str.porteGradi;
+  var info=document.getElementById('porte-slots-info');
+  if(info){
+    var g=D.str.porteGradi;
+    var magg=g,min=g*2;
+    info.textContent='→ max: '+magg+' Maggiore'+(magg>1?'':'')+ ' + '+min+' Minor'+(min!==1?'i':'e');
+  }
+  save();
+}
+function toggleMarchioSup(){
+  var tog=document.getElementById('tog-marchio-sup');
+  var sec=document.getElementById('marchio-sup-section');
+  if(!tog||!sec)return;
+  D.str.marchioSupAttivo=!D.str.marchioSupAttivo;
+  tog.classList.toggle('on',D.str.marchioSupAttivo);
+  sec.style.display=D.str.marchioSupAttivo?'block':'none';
+  save();
+}
+
+// TEILE — contatori generici
+function chgTeile(id,d){
+  if(!D.str.teile)D.str.teile={};
+  D.str.teile[id]=Math.max(0,(D.str.teile[id]||0)+d);
+  var e=document.getElementById(id+'-v');if(e)e.textContent=D.str.teile[id];
+  save();
+}
+
+// renderPorte aggiornato per caricare nuovi campi
+function loadPorteExtra(){
+  var s=D.str;
+  // Gradi
+  var gv=document.getElementById('porte-gradi-val');if(gv)gv.textContent=s.porteGradi||1;
+  var info=document.getElementById('porte-slots-info');
+  if(info){var g=s.porteGradi||1;info.textContent='→ max: '+g+' Maggiore'+(g>1?'':'')+ ' + '+(g*2)+' Minori';}
+  // Marchio Superiore
+  var tog=document.getElementById('tog-marchio-sup');if(tog)tog.classList.toggle('on',!!s.marchioSupAttivo);
+  var sec=document.getElementById('marchio-sup-section');if(sec)sec.style.display=s.marchioSupAttivo?'block':'none';
+  var sb=document.getElementById('porte-sup-bersaglio');if(sb)sb.value=s.porteSupBersaglio||'';
+  var sagg=document.getElementById('porte-sup-aggiunti');if(sagg)sagg.value=s.porteSupAggiunti||'';
+  var ssost=document.getElementById('porte-sup-sostitutivi');if(ssost)ssost.value=s.porteSupSostitutivi||'';
+  // Walkaway
+  var wa=document.getElementById('porte-walkaway-attivo');if(wa)wa.checked=!!s.walkawayAttivo;
+  var wan=document.getElementById('porte-walkaway-note');if(wan)wan.value=s.walkawayNote||'';
+  // Sangue
+  var psa=document.getElementById('porte-sangue-attivo');if(psa)psa.checked=!!s.porteSangueAttivo;
+  var psn=document.getElementById('porte-sangue-note');if(psn)psn.value=s.porteSangueNote||'';
+}
+function loadSorteExtra(){
+  var s=D.str;
+  var ssv=document.getElementById('sorte-sangue-val');if(ssv)ssv.textContent=s.sorteSangue||0;
+  var ssa=document.getElementById('sorte-sangue-attivo');if(ssa)ssa.checked=!!s.sorteSangueAttivo;
+  var ssn=document.getElementById('sorte-sangue-note');if(ssn)ssn.value=s.sorteSangueNote||'';
+}
+function loadTeile(){
+  var s=D.str;
+  if(!s.teile)return;
+  var keys=['hex-u-vivi','hex-u-occhi-v','hex-u-cuori-v','hex-u-mani-v','hex-u-cerv-v','hex-u-feg-v','hex-u-ling-v',
+            'hex-u-morti','hex-u-occhi-m','hex-u-cuori-m','hex-u-mani-m','hex-u-cerv-m','hex-u-feg-m','hex-u-ling-m',
+            'hex-m-gen','hex-m-denti','hex-m-sang','hex-m-org',
+            'hex-p-sang','hex-p-cap','hex-p-ung'];
+  keys.forEach(function(k){var e=document.getElementById(k+'-v');if(e)e.textContent=s.teile[k]||0;});
+  var mn=document.getElementById('hex-m-note');if(mn)mn.value=s.teile['hex-m-note-txt']||'';
+  var pa=document.getElementById('hex-p-altro');if(pa)pa.value=s.teile['hex-p-altro-txt']||'';
+}
 function addSorteTrama(tipo){if(!D.str.sorteTrame)D.str.sorteTrame=[];D.str.sorteTrame.push({nome:tipo==='lettura'?'Lettura':'',tipo,staffilate:1,effetto:'',usata:false});renderSorte();save();}
 function delSorteTrama(i){D.str.sorteTrame.splice(i,1);renderSorte();save();}
 function updSorteTrama(i,f,v){D.str.sorteTrame[i][f]=v;if(f==='nome'){updHeaderText('sorte-trame-list',i,'.sort-nome-disp',v||'Trama '+(i+1));save();}else if(f==='tipo'){renderSorte();}else save();}
@@ -3514,9 +3904,251 @@ function addStoria(){if(!D.p.storie)D.p.storie=[];D.p.storie.push({titolo:'',obi
 function delStoria(i){D.p.storie.splice(i,1);renderStorie();save();}
 function updStoria(i,f,v){D.p.storie[i][f]=v;if(f==='titolo'){updHeaderText('storie-list',i,'.stor-tit-d',v||'Storia '+(i+1));save();}else save();}
 
-// NAVE
-function loadNave(){const n=D.nave;['nome','classe','origini','bonus','ricchezza','background','carico','avventure'].forEach(f=>{const e=document.getElementById('nave-'+f);if(e)e.value=n[f]||'';});const c=document.getElementById('ciurme-totale');if(c)c.value=n.ciurmeTotale||20;}
-function renderCiurme(){const n=D.nave;const tot=parseInt(document.getElementById('ciurme-totale')?.value)||n.ciurmeTotale||20;n.ciurmeTotale=tot;if(!n.ciurmeF||n.ciurmeF.length!==tot)n.ciurmeF=Array(tot).fill(false);const t=document.getElementById('ciurme-track');if(!t)return;t.innerHTML='';for(let i=0;i<tot;i++){const s=document.createElement('div');s.className='ciurme-slot'+(n.ciurmeF[i]?' filled':'');s.onclick=()=>{n.ciurmeF[i]=!n.ciurmeF[i];renderCiurme();save();};t.appendChild(s);}}
+// NAVE — dati classi e origini
+var NAVE_CLASSI={
+  'Brigantino':'Due alberi a vele quadre. Piccola e veloce. 10–20 cannoni. Popolare tra i pirati.',
+  'Brigantino a Tre Alberi':'Veloce e manovrabile, anche con i remi. Preferita dai pirati.',
+  'Caracca':'Grande nave da carico a vele quadre (4 alberi). Pensata per lunghi viaggi. Poco spazio per cannoni.',
+  'Fluyt':'Scafo a forma di pera, basso pescaggio. Risale fiumi e si ormeggia ai moli. Carico via scialuppe.',
+  'Fregata':'Piccola nave militare veloce e manovrabile. Poco spazio per trasporto.',
+  'Galeone':'Il più grande vascello. 3 ponti, 3 alberi. Delle Armade Castilliane. Per lunghe traversate.',
+  'Man-of-War':'Nave da guerra pesantemente armata. Solo per il combattimento. Più massiccia della fregata.',
+  'Scuna':'Piccola e velocissima. Naviga in acque basse per sfuggire agli scontri.'
+};
+var NAVE_ORIGINI_BONUS={
+  'Avalon':'+2 Dadi Bonus su tutti i Rischi basati su velocità e manovrabilità (fuggire, inseguire…).',
+  'Castille':'La Nave può subire 1 Colpo aggiuntivo prima di subire un Colpo Critico.',
+  'Eisen':'+5 Equipaggio aggiuntivo. L\'Equipaggio può essere diviso in fino a 3 Ciurme.',
+  'Montaigne':'+2 Dadi Bonus nei Rischi sociali (negoziare con altre Navi).',
+  'Sarmatia':'La Nave ha un Background aggiuntivo.',
+  'Ussura':'+2 Dadi Bonus per navigare durante una tempesta o in acque pericolose (ghiaccio, barriere…).',
+  'Vestenmennavenjar':'Quando una Nave Vesten attacca un\'altra ottiene tutta la Ricchezza trasportata anziché metà.',
+  'Vodacce':'La Nave può trasportare Carico 3 invece di 2.',
+  'Esotica':'Ottiene sempre +1 Ricchezza quando vende beni stranieri a Théah o beni di Théah in porto straniero.'
+};
+
+// Avventure della Nave dal Manuale Base
+var NAVE_AVV_DB=[
+  {id:'na01',nome:'Una Jenny in Ogni Porto',desc:'La Nave deve attraccare in ogni Nazione di Théah. Quando raggiunge una città di Théah, un Eroe può spendere 1 Incremento o Punto Eroe. Qualsiasi autorità controlli il porto li tratterà bene.'},
+  {id:'na02',nome:'Una Vita Breve e Felice',desc:'Convincere l\'Equipaggio di un vascello ostile ad unirsi agli Eroi con negoziati, coercizione o intimidazione. L\'Equipaggio aumenta la sua Forza di 5.'},
+  {id:'na03',nome:'Avventuriera',desc:'Completare 5 Avventure. Ogni Eroe ottiene uno dei seguenti Vantaggi a scelta: Bevitore Emerito, Stomaco di Ferro o Gambe da Marinaio.'},
+  {id:'na04',nome:'Trascinateli verso il Loro Destino!',desc:'Eseguire con successo un abbordaggio. La prima volta che una Ciurma infligge Ferite nel Round, se si trova in mare, infliggerà una Ferita aggiuntiva.'},
+  {id:'na05',nome:'Riempire il Mare di Spettri',desc:'Sconfiggere 5 Navi in combattimento. La prima volta che la Nave fa fuoco con i cannoni nel Round infliggerà un Colpo aggiuntivo.'},
+  {id:'na06',nome:'L\'Oro Fa Sognare un Uomo',desc:'Guadagnare Ricchezza 10 vendendo il Carico in un singolo Viaggio. La Nave può trasportare 1 Carico aggiuntivo.'},
+  {id:'na07',nome:'All\'Inseguimento',desc:'Scappare da una città con le autorità alle calcagna. L\'Equipaggio impara a lasciare un porto in fretta, permettendo alla Nave di tornare a pieno Equipaggio in 12 ore invece di 24.'},
+  {id:'na08',nome:'"Quanto a Lungo Puoi Trattenere il Fiato?"',desc:'Immergersi presso un relitto, scoglio o caverna sottomarina. Gli Eroi ottengono 1 Dado Bonus in tutti i Rischi relativi a nuotare, spostarsi sott\'acqua o trattenere il fiato.'},
+  {id:'na09',nome:'Oltre la Mappa',desc:'Attraccare in una città fuori da Théah. Gli Eroi ottengono 1 Dado Bonus in tutti i Rischi sociali con PNG la cui lingua madre non sia parlata a Théah.'},
+  {id:'na10',nome:'Salvato dagli Abissi',desc:'Salvare un PNG naufrago (perso in mare, su un\'isola deserta ecc.). La Forza dell\'Equipaggio aumenta di 1.'},
+  {id:'na11',nome:'Licenza',desc:'Durante una licenza, gli Eroi danno inizio a un canto marinaresco in una bettola del porto. Una volta per sessione, un Eroe può spendere 1 Punto Eroe per riportare una Ciurma a piena Forza.'},
+  {id:'na12',nome:'Sfidare il Fato',desc:'Trasportare una Strega della Sorte PNG da un porto a un altro. All\'inizio di ogni sessione, ogni Eroe lancia un dado. Chi ottiene il risultato più alto sarà favorito dal Fato e comincerà con un Punto Eroe aggiuntivo.'},
+  {id:'na13',nome:'Grazie per l\'Aiuto',desc:'Salvare l\'equipaggio di una nave che affonda mentre le cose si mettono al peggio. Il Capitano e l\'Equipaggio salvati saranno d\'ora in poi alleati fidati. Tutti gli Eroi ottengono il Vantaggio Contatto.'},
+  {id:'na14',nome:'L\'Unico Pirata Buono…',desc:'La Nave ha Danneggiato una nave Pirata. La prima volta che un Eroe spende 1 Incremento per ridurre la Forza di una Squadra di Sgherri Pirata, la ridurrà di 1 ulteriore punto.'},
+  {id:'na15',nome:'Mi Scusi, Principessa',desc:'Trasportare un reale di Théah da un porto a un altro. I nobili trattano gli Eroi un po\' meglio e ottengono +1 Dado Bonus in tutti i Rischi sociali legati alla nobiltà.'},
+  {id:'na16',nome:'La X Indica il Punto',desc:'Trovare un tesoro sepolto. La Nave aggiunge Ricchezza 10 alla Tesoreria.'},
+  {id:'na17',nome:'O L\'Oro o la Vita!',desc:'La Nave è stata Danneggiata e si è arresa ai pirati, che l\'hanno depredata. La prima volta che un Eroe lancia un Rischio contro un pirata nel corso di una sessione, tutti i membri del gruppo ottengono un Punto Eroe.'}
+];
+
+function loadNave(){
+  var n=D.nave;
+  var nm=document.getElementById('nave-nome');if(nm)nm.value=n.nome||'';
+  var cl=document.getElementById('nave-classe');if(cl)cl.value=n.classe||'';
+  var or=document.getElementById('nave-origini');if(or)or.value=n.origini||'';
+  var cn=document.getElementById('nave-classe-note');if(cn)cn.value=n.classeNote||'';
+  var ng=document.getElementById('nave-note-generali');if(ng)ng.value=n.noteGenerali||'';
+  // stat
+  var rv=document.getElementById('nave-ric-val');if(rv)rv.textContent=n.ricchezza||0;
+  var ca=document.getElementById('nave-carico-att');if(ca)ca.textContent=n.caricoAtt||0;
+  var cm=document.getElementById('nave-carico-max');if(cm)cm.textContent=n.caricoMax||2;
+  // ciurme
+  var cf=document.getElementById('ciurme-forza-val');if(cf)cf.textContent=n.ciurmeForza||10;
+  var nc=document.getElementById('n-ciurme-val');if(nc)nc.textContent=n.nCiurme||1;
+  var ct=document.getElementById('ciurme-totale');if(ct)ct.value=n.ciurmeTotale||10;
+  onNaveClasseChange();
+  onNaveOriginiChange();
+  renderNaveColpi();
+  renderCiurme();
+  renderNaveBackgrounds();
+  renderNaveAvventure();
+  renderCarichi();
+}
+
+function onNaveClasseChange(){
+  var cl=document.getElementById('nave-classe');
+  if(!cl)return;
+  var v=cl.value;D.nave.classe=v;
+  var db=document.getElementById('nave-classe-desc');
+  if(db){if(v&&NAVE_CLASSI[v]){db.textContent=NAVE_CLASSI[v];db.style.display='block';}else{db.style.display='none';}}
+}
+function onNaveOriginiChange(){
+  var or=document.getElementById('nave-origini');
+  if(!or)return;
+  var v=or.value;D.nave.origini=v;
+  var db=document.getElementById('nave-origini-desc');
+  if(db){if(v&&NAVE_ORIGINI_BONUS[v]){db.textContent=NAVE_ORIGINI_BONUS[v];db.style.display='block';}else{db.style.display='none';}}
+}
+
+// Colpi e Colpi Critici
+function renderNaveColpi(){
+  var n=D.nave;
+  if(typeof n.colpi==='undefined')n.colpi=0;
+  if(typeof n.colpiCritici==='undefined')n.colpiCritici=0;
+  // Colpi (max 5)
+  var t=document.getElementById('nave-colpi-track');
+  if(t){t.innerHTML='';for(var i=0;i<5;i++){var s=document.createElement('div');s.className='ciurme-slot'+(i<n.colpi?' filled':'');s.style.cssText='width:30px;height:30px;border-radius:4px;border:2px solid var(--crimson);background:'+(i<n.colpi?'var(--crimson)':'var(--circle-empty)')+';cursor:pointer;transition:background .15s';s.dataset.i=i;s.onclick=(function(idx){return function(){var nn=D.nave;nn.colpi=(idx<nn.colpi)?idx:(idx+1);renderNaveColpi();aggiornaStatoNave();save();};})(i);t.appendChild(s);}}
+  // Colpi Critici (max 4)
+  var tc=document.getElementById('nave-colpi-critici-track');
+  if(tc){tc.innerHTML='';for(var j=0;j<4;j++){var sc=document.createElement('div');sc.className='ciurme-slot';sc.style.cssText='width:30px;height:30px;border-radius:4px;border:2px solid #8b3a00;background:'+(j<n.colpiCritici?'#8b3a00':'var(--circle-empty)')+';cursor:pointer;transition:background .15s';sc.dataset.j=j;sc.onclick=(function(jdx){return function(){var nn=D.nave;nn.colpiCritici=(jdx<nn.colpiCritici)?jdx:(jdx+1);renderNaveColpi();aggiornaStatoNave();save();};})(j);tc.appendChild(sc);}}
+  aggiornaStatoNave();
+}
+function aggiornaStatoNave(){
+  var n=D.nave;var box=document.getElementById('nave-stato-box');if(!box)return;
+  if((n.colpiCritici||0)>=4){box.style.cssText='display:block;padding:10px 14px;border-radius:8px;font-family:var(--font-title);font-size:0.8rem;font-weight:700;letter-spacing:1px;text-align:center;margin-bottom:10px;background:rgba(139,26,26,0.15);color:var(--crimson);border:2px solid var(--crimson)';box.textContent='⚓ NAVE AFFONDATA — "Il suo spirito sopravvive…"';}
+  else if((n.colpi||0)>=5){box.style.cssText='display:block;padding:10px 14px;border-radius:8px;font-family:var(--font-title);font-size:0.8rem;font-weight:700;letter-spacing:1px;text-align:center;margin-bottom:10px;background:rgba(201,100,0,0.12);color:#c96400;border:2px solid #c96400';box.textContent='⚠ NAVE DANNEGGIATA — Non può usare i cannoni né evitare il fuoco nemico';}
+  else{box.style.display='none';}
+}
+
+function chgNaveRicchezza(d){D.nave.ricchezza=Math.max(0,(D.nave.ricchezza||0)+d);var e=document.getElementById('nave-ric-val');if(e)e.textContent=D.nave.ricchezza;save();}
+function chgNaveCaricoAtt(d){D.nave.caricoAtt=Math.max(0,(D.nave.caricoAtt||0)+d);var e=document.getElementById('nave-carico-att');if(e)e.textContent=D.nave.caricoAtt;save();}
+function chgNaveCaricoMax(d){D.nave.caricoMax=Math.max(1,(D.nave.caricoMax||2)+d);var e=document.getElementById('nave-carico-max');if(e)e.textContent=D.nave.caricoMax;save();}
+function chgCiurmeForza(d){D.nave.ciurmeForza=Math.max(0,(D.nave.ciurmeForza||10)+d);var e=document.getElementById('ciurme-forza-val');if(e)e.textContent=D.nave.ciurmeForza;renderCiurmeDett();save();}
+function chgNCiurme(d){D.nave.nCiurme=Math.max(1,Math.min(2,(D.nave.nCiurme||1)+d));var e=document.getElementById('n-ciurme-val');if(e)e.textContent=D.nave.nCiurme;renderCiurmeDett();save();}
+
+function renderCiurmeDett(){
+  var el=document.getElementById('ciurme-dettaglio');if(!el)return;
+  var n=D.nave;var nc=n.nCiurme||1;var tot=n.ciurmeForza||10;
+  if(nc===1){el.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card2);border-radius:8px;margin-bottom:8px"><span style="font-family:var(--font-title);font-size:0.72rem;letter-spacing:1px;color:var(--text-muted)">CIURMA UNICA</span><span style="font-family:var(--font-title);font-size:0.85rem;font-weight:700;color:var(--crimson)">Forza '+tot+'</span></div>';}
+  else{
+    var f1=n.ciurmaF1||Math.ceil(tot/2),f2=n.ciurmaF2||Math.floor(tot/2);
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+      +'<div style="padding:8px 10px;background:var(--card2);border-radius:8px"><div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">CIURMA 1</div>'
+      +'<div style="display:flex;align-items:center;gap:6px"><button class="fc-btn" onclick="chgCiurmaF(1,-1)">−</button><span style="font-family:var(--font-title);font-weight:700;font-size:1rem;color:var(--crimson);min-width:24px;text-align:center" id="ciurma-f1-val">'+f1+'</span><button class="fc-btn" onclick="chgCiurmaF(1,1)">+</button></div></div>'
+      +'<div style="padding:8px 10px;background:var(--card2);border-radius:8px"><div style="font-family:var(--font-title);font-size:0.68rem;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px">CIURMA 2</div>'
+      +'<div style="display:flex;align-items:center;gap:6px"><button class="fc-btn" onclick="chgCiurmaF(2,-1)">−</button><span style="font-family:var(--font-title);font-weight:700;font-size:1rem;color:var(--crimson);min-width:24px;text-align:center" id="ciurma-f2-val">'+f2+'</span><button class="fc-btn" onclick="chgCiurmaF(2,1)">+</button></div></div>'
+      +'</div>';
+  }
+}
+function chgCiurmaF(n,d){var k='ciurmaF'+n;D.nave[k]=Math.max(0,(D.nave[k]||0)+d);var e=document.getElementById('ciurma-f'+n+'-val');if(e)e.textContent=D.nave[k];save();}
+
+function renderCiurme(){
+  var n=D.nave;var tot=parseInt(document.getElementById('ciurme-totale')?.value)||n.ciurmeTotale||10;
+  n.ciurmeTotale=tot;
+  if(!n.ciurmeF||n.ciurmeF.length!==tot)n.ciurmeF=Array(tot).fill(false);
+  var t=document.getElementById('ciurme-track');if(!t)return;
+  t.innerHTML='';
+  for(var i=0;i<tot;i++){
+    var s=document.createElement('div');s.className='ciurme-slot'+(n.ciurmeF[i]?' filled':'');
+    s.onclick=(function(idx){return function(){n.ciurmeF[idx]=!n.ciurmeF[idx];renderCiurme();save();};})(i);
+    t.appendChild(s);
+  }
+  renderCiurmeDett();
+}
+
+// BACKGROUND NAVE
+function renderNaveBackgrounds(){
+  var list=document.getElementById('nave-backgrounds-list');if(!list)return;
+  list.innerHTML='';
+  (D.nave.backgrounds||[]).forEach(function(b,i){
+    var div=document.createElement('div');div.className='entry-card';div.style.marginBottom='8px';
+    div.innerHTML='<div class="entry-header nb-tog">'
+      +'<span class="entry-title nb-nome-d">'+escH(b.nome||'Background '+(i+1))+'<\/span>'
+      +'<div style="display:flex;gap:6px;align-items:center"><span style="font-size:0.7rem;color:var(--text-muted)">&#9660;<\/span><button class="del-btn nb-del" data-i="'+i+'">&#10005;<\/button><\/div><\/div>'
+      +'<div class="entry-body">'
+      +'<div class="field-row"><span class="field-label">Nome<\/span><input class="field-input nb-nome" data-i="'+i+'" value="'+escH(b.nome||'')+'"><\/div>'
+      +'<div class="field-row"><span class="field-label">Eroe associato<\/span><input class="field-input nb-eroe" data-i="'+i+'" value="'+escH(b.eroe||'')+'" placeholder="Chi ha aggiunto questo BG?"><\/div>'
+      +'<textarea class="field-input nb-desc" data-i="'+i+'" rows="3" placeholder="Descrizione e bonus…">'+escH(b.desc||'')+'<\/textarea>'
+      +'<\/div>';
+    list.appendChild(div);
+  });
+  list.onclick=function(e){
+    var del=e.target.closest('.nb-del');if(del){e.stopPropagation();delNaveBackground(parseInt(del.dataset.i));return;}
+    var tog=e.target.closest('.nb-tog');if(tog&&!e.target.closest('.entry-body')){var b=tog.nextElementSibling;if(b)b.classList.toggle('open');}
+  };
+  list.oninput=function(e){
+    var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;
+    if(el.classList.contains('nb-nome')){D.nave.backgrounds[i].nome=el.value;var d=list.querySelectorAll('.nb-nome-d')[i];if(d)d.textContent=el.value||'Background '+(i+1);save();}
+    else if(el.classList.contains('nb-eroe')){D.nave.backgrounds[i].eroe=el.value;save();}
+    else if(el.classList.contains('nb-desc')){D.nave.backgrounds[i].desc=el.value;save();}
+  };
+}
+function addNaveBackground(){if(!D.nave.backgrounds)D.nave.backgrounds=[];D.nave.backgrounds.push({nome:'',eroe:'',desc:''});renderNaveBackgrounds();save();}
+function delNaveBackground(i){D.nave.backgrounds.splice(i,1);renderNaveBackgrounds();save();}
+
+// AVVENTURE NAVE
+function renderNaveAvventure(){
+  var list=document.getElementById('nave-avventure-list');if(!list)return;
+  list.innerHTML='';
+  (D.nave.avventure||[]).forEach(function(a,i){
+    var div=document.createElement('div');div.className='vantaggio-item';
+    var hb=a.homebrew?'<span class="homebrew-badge">HB<\/span>':'';
+    var compCb='<input type="checkbox" class="na-comp" data-i="'+i+'" '+(a.completata?'checked':'')+' style="cursor:pointer;accent-color:var(--crimson);width:16px;height:16px;flex-shrink:0">';
+    var strike=a.completata?'text-decoration:line-through;color:var(--text-muted)':'';
+    div.innerHTML='<div class="vantaggio-header na-tog">'
+      +'<div style="display:flex;align-items:center;gap:8px;flex:1">'+compCb
+      +'<span class="na-nome-d" style="'+strike+'">'+escH(a.nome||'Avventura '+(i+1))+'<\/span>'+hb+'<\/div>'
+      +'<div style="display:flex;gap:6px"><span style="font-size:0.7rem;color:var(--text-muted)">&#9660;<\/span>'
+      +'<button class="del-btn na-del" data-i="'+i+'">&#10005;<\/button><\/div><\/div>'
+      +'<div class="vantaggio-body">';
+    if(a.homebrew){
+      div.querySelector('.vantaggio-body').innerHTML='<div class="field-row"><span class="field-label">Nome<\/span><input class="field-input na-nome" data-i="'+i+'" value="'+escH(a.nome||'')+'"><\/div>'
+        +'<textarea class="field-input na-desc" data-i="'+i+'" rows="3" placeholder="Effetto…">'+escH(a.desc||'')+'<\/textarea>'
+        +'<div style="margin-top:6px;display:flex;align-items:center;gap:6px"><input type="checkbox" class="na-comp2" data-i="'+i+'" '+(a.completata?'checked':'')+' id="na-c2-'+i+'"><label for="na-c2-'+i+'" style="font-size:0.7rem;color:var(--crimson);cursor:pointer;font-family:var(--font-title)">COMPLETATA<\/label><\/div>';
+    } else {
+      div.querySelector('.vantaggio-body').innerHTML='<p style="color:var(--text-muted);font-size:0.88rem;line-height:1.5">'+escH(a.desc||'')+'<\/p>'
+        +'<div style="margin-top:8px;display:flex;align-items:center;gap:6px"><input type="checkbox" class="na-comp2" data-i="'+i+'" '+(a.completata?'checked':'')+' id="na-c2-'+i+'"><label for="na-c2-'+i+'" style="font-size:0.7rem;color:var(--crimson);cursor:pointer;font-family:var(--font-title)">COMPLETATA<\/label><\/div>'
+        +'<textarea class="field-input na-note" data-i="'+i+'" rows="2" placeholder="Note…" style="margin-top:6px">'+escH(a.note||'')+'<\/textarea>';
+    }
+    list.appendChild(div);
+  });
+  list.onclick=function(e){
+    var del=e.target.closest('.na-del');if(del){e.stopPropagation();delNaveAvv(parseInt(del.dataset.i));return;}
+    var cb=e.target.closest('.na-comp');if(cb){e.stopPropagation();var i=parseInt(cb.dataset.i);D.nave.avventure[i].completata=cb.checked;var c2=document.getElementById('na-c2-'+i);if(c2)c2.checked=cb.checked;var nd=cb.closest('.vantaggio-header').querySelector('.na-nome-d');if(nd)nd.style.textDecoration=cb.checked?'line-through':'';save();return;}
+    var tog=e.target.closest('.na-tog');if(tog&&!e.target.closest('.vantaggio-body')){var b=tog.nextElementSibling;if(b)b.classList.toggle('open');}
+  };
+  list.onchange=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('na-comp2')){D.nave.avventure[i].completata=el.checked;var h=list.querySelector('.na-comp[data-i="'+i+'"]');if(h)h.checked=el.checked;var nd=h&&h.closest('.vantaggio-header')&&h.closest('.vantaggio-header').querySelector('.na-nome-d');if(nd)nd.style.textDecoration=el.checked?'line-through':'';save();}};
+  list.oninput=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('na-nome')){D.nave.avventure[i].nome=el.value;var d=list.querySelectorAll('.na-nome-d')[i];if(d)d.textContent=el.value||'Avventura '+(i+1);save();}else if(el.classList.contains('na-desc')){D.nave.avventure[i].desc=el.value;save();}else if(el.classList.contains('na-note')){D.nave.avventure[i].note=el.value;save();}};
+}
+function addNaveAvvHB(){if(!D.nave.avventure)D.nave.avventure=[];D.nave.avventure.push({nome:'',desc:'',note:'',completata:false,homebrew:true});renderNaveAvventure();save();}
+function delNaveAvv(i){D.nave.avventure.splice(i,1);renderNaveAvventure();save();}
+function openNaveAvvModal(){document.getElementById('nave-avv-modal').classList.add('open');document.getElementById('nave-avv-search').value='';renderNaveAvvModalList();}
+function closeNaveAvvModal(){document.getElementById('nave-avv-modal').classList.remove('open');}
+function renderNaveAvvModalList(){
+  var q=document.getElementById('nave-avv-search').value.toLowerCase();
+  var ex=(D.nave.avventure||[]).map(function(a){return a.id;}).filter(Boolean);
+  var fl=NAVE_AVV_DB.filter(function(a){return !ex.includes(a.id)&&(a.nome.toLowerCase().includes(q)||a.desc.toLowerCase().includes(q));});
+  document.getElementById('nave-avv-modal-list').innerHTML=fl.map(function(a){
+    return '<div class="vantaggio-list-item" onclick="addNaveAvvFromDB(\''+a.id+'\')"><div class="v-name">'+escH(a.nome)+'<\/div><div class="v-desc">'+escH(a.desc.substring(0,130))+(a.desc.length>130?'…':'')+'<\/div><\/div>';
+  }).join('');
+}
+function addNaveAvvFromDB(id){
+  var a=NAVE_AVV_DB.find(function(x){return x.id===id;});if(!a)return;
+  if(!D.nave.avventure)D.nave.avventure=[];
+  D.nave.avventure.push(Object.assign({},a,{note:'',completata:false}));
+  renderNaveAvventure();closeNaveAvvModal();save();
+}
+
+// CARICO
+function renderCarichi(){
+  var list=document.getElementById('nave-carichi-list');if(!list)return;
+  list.innerHTML='';
+  (D.nave.carichi||[]).forEach(function(c,i){
+    var div=document.createElement('div');div.className='eq-entry';
+    div.innerHTML='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+      +'<input class="field-input car-nome" data-i="'+i+'" value="'+escH(c.nome||'')+'" placeholder="Es. Seta Castilliana…" style="flex:1;min-width:120px">'
+      +'<input class="field-input car-ric" data-i="'+i+'" type="number" min="0" value="'+(c.ricchezza||1)+'" style="max-width:70px" title="Valore in Ricchezza">'
+      +'<span class="fc-label">Ric.</span>'
+      +'<input type="checkbox" class="car-cons" data-i="'+i+'" '+(c.consegnato?'checked':'')+' title="Consegnato" style="accent-color:var(--crimson);cursor:pointer;width:16px;height:16px">'
+      +'<span style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-title)">CONS.</span>'
+      +'<button class="del-btn car-del" data-i="'+i+'">&#10005;<\/button>'
+      +'<\/div>';
+    list.appendChild(div);
+  });
+  list.oninput=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('car-nome')){D.nave.carichi[i].nome=el.value;save();}else if(el.classList.contains('car-ric')){D.nave.carichi[i].ricchezza=parseInt(el.value)||1;save();}};
+  list.onchange=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('car-cons')){D.nave.carichi[i].consegnato=el.checked;save();}};
+  list.onclick=function(e){var del=e.target.closest('.car-del');if(del){e.stopPropagation();delCarico(parseInt(del.dataset.i));}};
+}
+function addCarico(){if(!D.nave.carichi)D.nave.carichi=[];D.nave.carichi.push({nome:'',ricchezza:1,consegnato:false});renderCarichi();save();}
+function delCarico(i){D.nave.carichi.splice(i,1);renderCarichi();save();}
+
 function renderEq(){
   var list=document.getElementById('equipaggio-list');if(!list)return;
   list.innerHTML='';
@@ -3525,13 +4157,30 @@ function renderEq(){
     var rs=m.ruolo?' — <span style="font-weight:400;font-size:0.8rem;color:var(--text-muted)">'+escH(m.ruolo)+'<\/span>':'';
     div.innerHTML='<div class="entry-header eq-tog"><span class="entry-title">'+escH(m.nome||'Membro '+(i+1))+rs+'<\/span>'
       +'<div style="display:flex;gap:6px;align-items:center"><span style="font-size:0.7rem;color:var(--text-muted)">&#9660;<\/span><button class="del-btn eq-del" data-i="'+i+'">&#10005;<\/button><\/div><\/div>'
-      +'<div class="entry-body"><div class="field-row"><span class="field-label">Nome<\/span><input class="field-input eq-nome" data-i="'+i+'" value="'+escH(m.nome||'')+'"><\/div>'
-      +'<div class="field-row"><span class="field-label">Ruolo<\/span><input class="field-input eq-ruolo" data-i="'+i+'" value="'+escH(m.ruolo||'')+'" placeholder="Capitano…"><\/div>'
+      +'<div class="entry-body">'
+      +'<div class="field-row"><span class="field-label">Nome<\/span><input class="field-input eq-nome" data-i="'+i+'" value="'+escH(m.nome||'')+'"><\/div>'
+      +'<div class="field-row"><span class="field-label">Ruolo<\/span>'
+      +'<select class="field-input eq-ruolo" data-i="'+i+'" style="font-family:var(--font-body)">'
+      +'<option value="">Scegli…<\/option>'
+      +'<option '+(m.ruolo==='Capitano'?'selected':'')+'>Capitano<\/option>'
+      +'<option '+(m.ruolo==='Luogotenente'?'selected':'')+'>Luogotenente<\/option>'
+      +'<option '+(m.ruolo==='Comandante'?'selected':'')+'>Comandante<\/option>'
+      +'<option '+(m.ruolo==='Timoniere'?'selected':'')+'>Timoniere<\/option>'
+      +'<option '+(m.ruolo==='Quartiermastro'?'selected':'')+'>Quartiermastro<\/option>'
+      +'<option '+(m.ruolo==='Nostromo'?'selected':'')+'>Nostromo<\/option>'
+      +'<option '+(m.ruolo==='Cannoniere'?'selected':'')+'>Cannoniere<\/option>'
+      +'<option '+(m.ruolo==='Medico di Bordo'?'selected':'')+'>Medico di Bordo<\/option>'
+      +'<option '+(m.ruolo==='Carpentiere'?'selected':'')+'>Carpentiere<\/option>'
+      +'<option '+(m.ruolo==='Cuoco'?'selected':'')+'>Cuoco<\/option>'
+      +'<option '+(m.ruolo==='Marinaio'?'selected':'')+'>Marinaio<\/option>'
+      +'<option value="_custom" '+(m.ruolo&&!['Capitano','Luogotenente','Comandante','Timoniere','Quartiermastro','Nostromo','Cannoniere','Medico di Bordo','Carpentiere','Cuoco','Marinaio'].includes(m.ruolo)?'selected':'')+'>Altro (vedi note)<\/option>'
+      +'<\/select><\/div>'
       +'<div class="field-row"><span class="field-label">Note<\/span><input class="field-input eq-note" data-i="'+i+'" value="'+escH(m.note||'')+'" placeholder="—"><\/div><\/div>';
     list.appendChild(div);
   });
   list.onclick=function(e){var del=e.target.closest('.eq-del');if(del){e.stopPropagation();delEq(parseInt(del.dataset.i));return;}var tog=e.target.closest('.eq-tog');if(tog&&!e.target.closest('.entry-body')){var b=tog.nextElementSibling;if(b)b.classList.toggle('open');}};
-  list.oninput=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('eq-nome')){D.nave.equipaggio[i].nome=el.value;updHeaderText('equipaggio-list',i,'.entry-title',el.value||'Membro '+(i+1));save();return;}if(el.classList.contains('eq-ruolo')){D.nave.equipaggio[i].ruolo=el.value;save();return;}if(el.classList.contains('eq-note')){D.nave.equipaggio[i].note=el.value;save();}};
+  list.onchange=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('eq-ruolo')){if(el.value!=='_custom')D.nave.equipaggio[i].ruolo=el.value;save();}};
+  list.oninput=function(e){var el=e.target,i=parseInt(el.dataset.i);if(isNaN(i))return;if(el.classList.contains('eq-nome')){D.nave.equipaggio[i].nome=el.value;updHeaderText('equipaggio-list',i,'.entry-title',el.value||'Membro '+(i+1));save();return;}if(el.classList.contains('eq-note')){D.nave.equipaggio[i].note=el.value;save();}};
 }
 function addEq(){if(!D.nave.equipaggio)D.nave.equipaggio=[];D.nave.equipaggio.push({nome:'',ruolo:'',note:''});renderEq();save();}
 function delEq(i){D.nave.equipaggio.splice(i,1);renderEq();save();}
