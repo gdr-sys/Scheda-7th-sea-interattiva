@@ -973,31 +973,79 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 <!-- ===== DADI ===== -->
 <div class="page" id="page-dadi">
   <div class="dice-card">
+
+    <!-- RIGA 1: Dadi principali + Obiettivo -->
     <div class="dice-grid">
-      <div><div class="dice-label">N. Dadi</div><input type="number" class="dice-input" id="d-count" value="5" min="1" max="20"></div>
-      <div><div class="dice-label">Obiettivo</div>
-        <select class="dice-select" id="d-target">
-          <option value="10">Somma 10</option>
-          <option value="15">Somma 15 (+10)</option>
+      <div>
+        <div class="dice-label">N. Dadi</div>
+        <input type="number" class="dice-input" id="d-count" value="5" min="1" max="99">
+      </div>
+      <div>
+        <div class="dice-label">Dadi Bonus</div>
+        <input type="number" class="dice-input" id="d-bonus-count" value="0" min="0" max="20" title="Non esplodono mai">
+      </div>
+      <div>
+        <div class="dice-label">Bonus/Dado</div>
+        <select class="dice-select" id="d-bonus">
+          <option value="0">+0</option><option value="1">+1</option><option value="2">+2</option>
+          <option value="3">+3</option><option value="4">+4</option><option value="5">+5</option>
         </select>
       </div>
     </div>
-    <div class="bonus-row">
-      <span style="font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;font-size:0.78rem;font-weight:600;letter-spacing:1px">Bonus per dado:</span>
-      <select class="dice-select" id="d-bonus" style="width:auto;padding:5px 10px;margin:0">
-        <option value="0">+0</option><option value="1">+1</option><option value="2">+2</option>
-        <option value="3">+3</option><option value="4">+4</option><option value="5">+5</option>
-      </select>
+
+    <!-- Opzioni base -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+      <label class="option-tile" id="d-tile-expl">
+        <input type="checkbox" id="d-expl" onchange="dTileToggle('d-tile-expl',this.checked)">
+        <span>Esplosione 10</span>
+      </label>
+      <label class="option-tile" id="d-tile-double">
+        <input type="checkbox" id="d-double" onchange="dTileToggle('d-tile-double',this.checked)">
+        <span>Doppio Incremento</span>
+      </label>
+      <label class="option-tile" id="d-tile-only15">
+        <input type="checkbox" id="d-only15" onchange="dTileToggle('d-tile-only15',this.checked);dOnOnly15Change()">
+        <span>Solo Somma 15</span>
+      </label>
     </div>
-    <label class="option-tile" id="d-tile-expl">
-      <input type="checkbox" id="d-expl" onchange="document.getElementById('d-tile-expl').classList.toggle('active',this.checked)">
-      <span style="font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;font-size:0.82rem;font-weight:600;letter-spacing:1px">Esplosione del 10</span>
-    </label>
+
+    <!-- Tasto LANCIA -->
     <button class="roll-btn" onclick="diceFirstRoll()">&#127922; LANCIA DADI</button>
-    <button id="d-reroll" class="reroll-btn" onclick="diceReroll()">&#8617; RILANCIA SELEZIONATO</button>
+    <button id="d-reroll" class="reroll-btn" onclick="diceReroll()" style="display:none">&#8617; RILANCIA SELEZIONATO</button>
+
+    <!-- Pannello avanzato -->
+    <div style="margin-top:10px">
+      <button onclick="dToggleAdvanced()" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:5px 12px;color:var(--text-muted);font-family:var(--font-title);font-size:0.72rem;letter-spacing:1px;cursor:pointer;width:100%" id="d-adv-btn">+ OPZIONI AVANZATE</button>
+      <div id="d-adv-panel" style="display:none;margin-top:10px;padding:10px;background:var(--card2);border-radius:8px;border:1px solid var(--border)">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <label class="option-tile" id="d-tile-gioia">
+            <input type="checkbox" id="d-gioia" onchange="dTileToggle('d-tile-gioia',this.checked)">
+            <span>Gioia di Vivere</span>
+          </label>
+          <label class="option-tile" id="d-tile-lupo">
+            <input type="checkbox" id="d-lupo" onchange="dTileToggle('d-tile-lupo',this.checked)">
+            <span>Lupo di Mare (9=10)</span>
+          </label>
+          <label class="option-tile" id="d-tile-sbarr">
+            <input type="checkbox" id="d-sbarr" onchange="dTileToggle('d-tile-sbarr',this.checked)">
+            <span>Fuoco di Sbarramento</span>
+          </label>
+        </div>
+        <!-- Riserva: Forza a 10 / Distribuisci +X -->
+        <div id="d-riserva-row" style="display:none;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px">
+          <button id="d-btn-force10" onclick="dToggleForce10()" class="dice-action-btn">&#9881; Forza a 10</button>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button id="d-btn-bonus-free" onclick="dToggleBonusFree()" class="dice-action-btn">+ Distribuisci</button>
+            <input type="number" id="d-bonus-free-val" value="1" min="1" max="10" style="width:44px;padding:4px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-title);font-size:0.85rem;text-align:center">
+            <span id="d-bonus-remaining" style="font-size:0.72rem;color:var(--gold);font-family:var(--font-title)"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
   <div id="dice-results"></div>
-</div>
+
 
 <!-- ===== IMPOSTAZIONI ===== -->
 <div class="page" id="page-impostazioni">
@@ -3610,17 +3658,218 @@ function exportData(){const b=new Blob([JSON.stringify(D,null,2)],{type:'applica
 function importData(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{D=dm(D,JSON.parse(e.target.result));localStorage.setItem('7sea',JSON.stringify(D));location.reload();}catch(err){alert('File non valido!');}};r.readAsText(f);}
 
 // DADI
-let dDice=[],dReroll=true;
-function dRoll(ext=false){const b=parseInt(document.getElementById('d-bonus').value)||0;const r=Math.floor(Math.random()*10)+1;return{val:r+b,nat:r,ext,sel:false};}
-function diceFirstRoll(){dReroll=true;const n=parseInt(document.getElementById('d-count').value)||0;dDice=[];for(let i=0;i<n;i++){let d=dRoll();dDice.push(d);if(document.getElementById('d-expl').checked&&d.nat===10)dExtra(0);}dRend();}
-function dExtra(depth){if((depth||0)>20)return;let e=dRoll(true);dDice.push(e);if(e.nat===10)dExtra((depth||0)+1);}
-function dTogSel(i){if(!dReroll)return;const w=dDice[i].sel;dDice.forEach(d=>d.sel=false);dDice[i].sel=!w;dRend();}
-function diceReroll(){if(!dReroll)return;let idx=dDice.findIndex(d=>d.sel);if(idx!==-1){dDice.splice(idx,1);let d=dRoll();dDice.push(d);if(document.getElementById('d-expl').checked&&d.nat===10)dExtra(0);dReroll=false;}dRend();}
-function dBest(dice,tgt){let best={sets:[],lft:[...dice],inc:0,sc:-Infinity};const dv=[...dice].sort((a,b)=>b-a);function solve(rem,cur){for(let sz=1;sz<=rem.length;sz++){for(const co of dCombos(rem,sz)){const sm=co.reduce((a,b)=>a+b,0);let tp=0,iv=0;if(tgt===15){if(sm>=15){tp=15;iv=2;}else if(sm>=10){tp=10;iv=1;}}else if(sm>=10){tp=10;iv=1;}if(tp>0){const nr=[...rem];co.forEach(v=>nr.splice(nr.indexOf(v),1));cur.push({v:co,t:sm,tp,inc:iv});solve(nr,cur);cur.pop();}}}const ti=cur.reduce((a,s)=>a+s.inc,0),tw=cur.reduce((a,s)=>a+(s.t-s.tp),0),sc=(ti*1e6)+(rem.length*1000)-(tw);if(sc>best.sc){best.sc=sc;best.sets=JSON.parse(JSON.stringify(cur));best.lft=[...rem];best.inc=ti;}}function dCombos(arr,k){const r=[];function h(st,c){if(c.length===k){r.push([...c]);return;}for(let i=st;i<arr.length;i++){c.push(arr[i]);h(i+1,c);c.pop();}}h(0,[]);return r;}solve(dv,[]);return best;}
-function dRend(){if(!dDice.length)return;const tgt=parseInt(document.getElementById('d-target').value);const rd=document.getElementById('dice-results');document.getElementById('d-reroll').style.display=(dReroll&&dDice.some(d=>d.sel))?'block':'none';let h='<div class="dice-section-title">DADI LANCIATI<\/div><div style="text-align:center">';dDice.forEach((d,i)=>{h+=`<div class="die-el${d.sel?' selected':''}" onclick="dTogSel(${i})">${d.val}${d.ext?'<span class="ext-badge">EXT<\/span>':''}<\/div>`;});const res=dBest(dDice.map(d=>d.val),tgt);h+=`<\/div><div class="summary-box">${res.inc} ${res.inc===1?'INCREMENTO':'INCREMENTI'}<\/div>`;if(res.sets.length){h+='<div class="dice-section-title">COMBINAZIONI<\/div>';res.sets.forEach(s=>{h+=`<div class="combo-set ${s.tp===15?'sum15':'sum10'}"><span>${s.v.join(' + ')} = <b>${s.t}<\/b><\/span><span class="inc-badge">+${s.inc} INC<\/span><\/div>`;});}if(res.lft.length)h+=`<div class="dice-section-title">SCARTI<\/div><div class="waste-box">Scarti: ${res.lft.sort((a,b)=>b-a).join(', ')}<\/div>`;rd.innerHTML=h;}
+// ===== DADI =====
+let dDice=[], dReroll=true, dForce10=false, dBonusFree=false, dBonusFreeLeft=0;
 
-// ===== BACKGROUND SELECTION =====
-var _bgSelected = null;
+function dG(id){return document.getElementById(id);}
+function dTileToggle(tileId,on){var t=dG(tileId);if(t)t.classList.toggle('active',on);}
+function dToggleAdvanced(){
+  var panel=dG('d-adv-panel'),btn=dG('d-adv-btn');
+  var open=panel.style.display!=='none';
+  panel.style.display=open?'none':'block';
+  btn.textContent=open?'+ OPZIONI AVANZATE':'- OPZIONI AVANZATE';
+}
+function dOnOnly15Change(){
+  var only15=dG('d-only15').checked;
+  var dbl=dG('d-double');
+  if(dbl){dbl.disabled=only15;if(only15){dbl.checked=false;dTileToggle('d-tile-double',false);}}
+}
+function dEffVal(d){return d.nat+(d.bonus||0)+(d.boost||0);}
+
+function dRoll(isExt){
+  var b=isExt?0:(parseInt(dG('d-bonus').value)||0);
+  var r=Math.floor(Math.random()*10)+1;
+  return{nat:r,bonus:b,boost:0,exploded:isExt||false,sel:false,noExplode:false};
+}
+function dRollBonus(){
+  var r=Math.floor(Math.random()*10)+1;
+  return{nat:r,bonus:0,boost:0,exploded:false,sel:false,noExplode:true};
+}
+function dExtra(depth){
+  if((depth||0)>20)return;
+  var e=dRoll(true);dDice.push(e);
+  if(e.nat===10)dExtra((depth||0)+1);
+}
+
+function diceFirstRoll(){
+  dForce10=false;dBonusFree=false;dBonusFreeLeft=0;
+  dReroll=true;
+  var n=Math.max(1,parseInt(dG('d-count').value)||1);
+  var nb=Math.max(0,parseInt(dG('d-bonus-count').value)||0);
+  dDice=[];
+  for(var i=0;i<n;i++){
+    var d=dRoll(false);dDice.push(d);
+    if(dG('d-expl').checked&&d.nat===10)dExtra(0);
+  }
+  for(var j=0;j<nb;j++) dDice.push(dRollBonus());
+  dRiservaUpdate();dRend();
+}
+
+function dTogSel(i){
+  if(dForce10){dApplyForce10(i);return;}
+  if(dBonusFree){dApplyBonusFree(i);return;}
+  dDice[i].sel=!dDice[i].sel;dRend();
+}
+function diceReroll(){
+  if(!dReroll)return;dReroll=false;
+  dDice=dDice.map(function(d){
+    if(!d.sel)return d;
+    var nd=dRoll(false);
+    if(dG('d-expl').checked&&nd.nat===10)dExtra(0);
+    return nd;
+  });
+  dRend();
+}
+
+// Forza a 10
+function dToggleForce10(){
+  if(!dDice.length)return;
+  dBonusFree=false;dBonusFreeLeft=0;
+  dForce10=!dForce10;
+  var btn=dG('d-btn-force10');if(btn)btn.classList.toggle('active',dForce10);
+  dRend();
+}
+function dApplyForce10(i){
+  dDice[i].nat=10;dDice[i].boost=0;
+  dForce10=false;
+  var btn=dG('d-btn-force10');if(btn)btn.classList.remove('active');
+  if(dG('d-expl').checked&&!dDice[i].noExplode)dExtra(0);
+  dRend();
+}
+
+// Distribuisci +X
+function dToggleBonusFree(){
+  if(!dDice.length)return;
+  dForce10=false;
+  dBonusFree=!dBonusFree;
+  if(dBonusFree){
+    dBonusFreeLeft=Math.max(1,parseInt(dG('d-bonus-free-val').value)||1);
+    var inp=dG('d-bonus-free-val');if(inp)inp.disabled=true;
+  } else {
+    dBonusFreeLeft=0;
+    var inp2=dG('d-bonus-free-val');if(inp2)inp2.disabled=false;
+  }
+  var btn=dG('d-btn-bonus-free');if(btn)btn.classList.toggle('active',dBonusFree);
+  dBonusUpdate();dRend();
+}
+function dApplyBonusFree(i){
+  if(dBonusFreeLeft<=0){dBonusFree=false;dRend();return;}
+  dDice[i].boost=(dDice[i].boost||0)+1;
+  dBonusFreeLeft--;
+  if(dBonusFreeLeft<=0){
+    dBonusFree=false;
+    var inp=dG('d-bonus-free-val');if(inp)inp.disabled=false;
+    var btn=dG('d-btn-bonus-free');if(btn)btn.classList.remove('active');
+  }
+  dBonusUpdate();dRend();
+}
+function dBonusUpdate(){
+  var el=dG('d-bonus-remaining');
+  if(el)el.textContent=dBonusFree?'Rimasti: '+dBonusFreeLeft:'';
+}
+function dRiservaUpdate(){
+  var row=dG('d-riserva-row');
+  if(row)row.style.display=dDice.length?'flex':'none';
+}
+
+// Partition: greedy best-of-10/15
+function dBest(vals,tgt,dbl,only15){
+  var lupo=dG('d-lupo')&&dG('d-lupo').checked;
+  var sbarr=dG('d-sbarr')&&dG('d-sbarr').checked;
+  var filtered=vals.map(function(v){return lupo&&v===9?10:v;});
+  if(sbarr)filtered=filtered.filter(function(v){return v%2!==0;});
+  var sorted=filtered.slice().sort(function(a,b){return b-a;});
+  var used=new Array(sorted.length).fill(false);
+  var sets=[];
+  function greedy(threshold,incVal){
+    var changed=true;
+    while(changed){
+      changed=false;
+      var pool=[];
+      for(var i2=0;i2<sorted.length;i2++)if(!used[i2])pool.push({idx:i2,val:sorted[i2]});
+      pool.sort(function(a,b){return b.val-a.val;});
+      var combo=[],sum2=0;
+      for(var p=0;p<pool.length;p++){combo.push(pool[p]);sum2+=pool[p].val;if(sum2>=threshold)break;}
+      if(sum2>=threshold){
+        combo.forEach(function(c){used[c.idx]=true;});
+        var ai=dbl&&threshold===10?incVal*2:incVal;
+        sets.push({v:combo.map(function(c){return c.val;}),t:sum2,type:threshold,inc:ai});
+        changed=true;
+      }
+    }
+  }
+  if(only15){greedy(15,1);}
+  else{greedy(15,2);greedy(10,1);}
+  var lft=[];for(var k=0;k<sorted.length;k++)if(!used[k])lft.push(sorted[k]);
+  var tot=sets.reduce(function(a,s){return a+s.inc;},0);
+  return{sets:sets,leftovers:lft,totalIncrements:tot};
+}
+
+function dGioiaCheck(lft,tgt,only15){
+  if(!lft.length)return null;
+  var threshold=only15?15:10;
+  var sorted=lft.slice().sort(function(a,b){return b-a;});
+  var cap=Math.min(sorted.length,20);
+  var sub=sorted.slice(0,cap);
+  for(var mask=1;mask<(1<<cap);mask++){
+    var sum3=0;
+    for(var b2=0;b2<cap;b2++)if(mask&(1<<b2))sum3+=sub[b2];
+    if(sum3===threshold-1)return sum3;
+  }
+  return null;
+}
+
+function dRend(){
+  if(!dDice.length)return;
+  var tgt=parseInt((dG('d-target')||{value:'10'}).value)||10;
+  var dbl=dG('d-double')&&dG('d-double').checked&&!dG('d-only15').checked;
+  var only15=dG('d-only15')&&dG('d-only15').checked;
+  var useGioia=dG('d-gioia')&&dG('d-gioia').checked;
+  var rd=dG('dice-results');
+  var anysel=dDice.some(function(d){return d.sel;});
+  var rr=dG('d-reroll');
+  if(rr)rr.style.display=(dReroll&&anysel&&!dForce10&&!dBonusFree)?'block':'none';
+
+  // Dice display
+  var h='<div class="dice-section-title">DADI LANCIATI</div><div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:14px">';
+  dDice.forEach(function(d,i){
+    var cls='die';
+    if(dForce10)cls+=' die-force10';
+    else if(dBonusFree)cls+=' die-bonus-mode';
+    else if(d.sel)cls+=' selected';
+    if(d.boost>0&&!dForce10&&!dBonusFree)cls+=' die-boosted';
+    if(d.noExplode)cls+=' no-explode';
+    var extB=d.exploded?'<span class="ext-badge">+</span>':'';
+    var boostB=d.boost>0?'<span class="boost-badge">+'+d.boost+'</span>':'';
+    var lockB=d.noExplode?'<span class="lock-badge">&#128274;</span>':'';
+    var bonusL=d.bonus>0?'<span class="bonus-label">+'+d.bonus+'</span>':'';
+    h+='<div class="'+cls+'" onclick="dTogSel('+i+')">'+d.nat+bonusL+extB+boostB+lockB+'</div>';
+  });
+  h+='</div>';
+
+  // Results
+  var res=dBest(dDice.map(function(d){return dEffVal(d);}),tgt,dbl,only15);
+  var incWord=res.totalIncrements===1?'Incremento':'Incrementi';
+  h+='<div class="summary-box">'+res.totalIncrements+' '+incWord+'</div>';
+
+  if(res.sets.length){
+    h+='<div class="dice-section-title">COMBINAZIONI</div>';
+    res.sets.forEach(function(s){
+      var cls=s.type===15?'set-15':'set-10';
+      h+='<div class="set '+cls+'"><span>'+s.v.join(' + ')+' = <b>'+s.t+'</b></span><span class="inc-badge">+'+s.inc+' INC</span></div>';
+    });
+  }
+  if(res.leftovers.length){
+    h+='<div class="dice-section-title">SCARTI</div><div class="waste-box">'+res.leftovers.slice().sort(function(a,b){return b-a;}).join(', ')+'</div>';
+    if(useGioia){
+      var gr=dGioiaCheck(res.leftovers,tgt,only15);
+      if(gr!==null)h+='<div class="gioia-hint">✨ Gioia di Vivere: aggiungi +1 a '+gr+' → '+(gr+1)+' per un Incremento!</div>';
+    }
+  }
+  rd.innerHTML=h;
+  dRiservaUpdate();
+}
+
 
 function renderBgList(){
   var list=document.getElementById('bg-list');if(!list)return;
