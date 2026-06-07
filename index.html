@@ -1168,6 +1168,21 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </div>
   </div>
 
+  <div class="card" style="text-align:center">
+    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px;line-height:1.6">
+      Questo strumento &egrave; gratuito e fatto con amore.<br>
+      Se ti &egrave; stato utile e vuoi offrirmi un caff&egrave;, lo apprezzo tantissimo &#9825;
+    </div>
+    <a href="https://ko-fi.com/noemimarcolini" target="_blank" rel="noopener"
+       style="display:inline-flex;align-items:center;gap:10px;background:#FF5E5B;color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-family:var(--font-title);font-weight:700;font-size:0.9rem;letter-spacing:1px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682-.284-1.682-.284V7.995s.153-1.027 1.482-1.127c1.329-.1 2.044 1.035 2.044 2.442s-.916 2.627-1.844 2.627z"/>
+      </svg>
+      OFFRIMI UN CAFF&Egrave;
+    </a>
+    <div style="font-size:0.68rem;color:var(--text-muted);margin-top:8px">ko-fi.com/noemimarcolini</div>
+  </div>
+
 </div>
 
 </div><!-- /app-shell -->
@@ -3670,54 +3685,57 @@ function dToggleAdvanced(){
   btn.textContent=open?'+ OPZIONI AVANZATE':'- OPZIONI AVANZATE';
 }
 function dOnOnly15Change(){
-  var only15=dG('d-only15').checked;
+  var only15=dG('d-only15')&&dG('d-only15').checked;
   var dbl=dG('d-double');
   if(dbl){dbl.disabled=only15;if(only15){dbl.checked=false;dTileToggle('d-tile-double',false);}}
 }
-function dEffVal(d){return d.nat+(d.bonus||0)+(d.boost||0);}
 
-function dRoll(isExt){
-  var b=isExt?0:(parseInt(dG('d-bonus').value)||0);
+function dEffVal(d){return d.natural+(d.bonus||0)+(d.boost||0);}
+
+function dRollSingle(isExtra){
+  var bonus=isExtra?0:(parseInt((dG('d-bonus')||{value:'0'}).value)||0);
   var r=Math.floor(Math.random()*10)+1;
-  return{nat:r,bonus:b,boost:0,exploded:isExt||false,sel:false,noExplode:false};
+  return{natural:r,bonus:bonus,boost:0,exploded:isExtra||false,selected:false,noExplode:false};
 }
 function dRollBonus(){
   var r=Math.floor(Math.random()*10)+1;
-  return{nat:r,bonus:0,boost:0,exploded:false,sel:false,noExplode:true};
+  return{natural:r,bonus:0,boost:0,exploded:false,selected:false,noExplode:true};
 }
-function dExtra(depth){
-  if((depth||0)>20)return;
-  var e=dRoll(true);dDice.push(e);
-  if(e.nat===10)dExtra((depth||0)+1);
+function dRollExtra(){
+  var e=dRollSingle(true);dDice.push(e);
+  if(e.natural===10)dRollExtra();
 }
 
 function diceFirstRoll(){
-  dForce10=false;dBonusFree=false;dBonusFreeLeft=0;
-  dReroll=true;
-  var n=Math.max(1,parseInt(dG('d-count').value)||1);
-  var nb=Math.max(0,parseInt(dG('d-bonus-count').value)||0);
+  dForce10=false;dBonusFree=false;dBonusFreeLeft=0;dReroll=true;
+  var n=Math.max(1,parseInt((dG('d-count')||{value:'5'}).value)||1);
+  var nb=Math.max(0,parseInt((dG('d-bonus-count')||{value:'0'}).value)||0);
   dDice=[];
-  for(var i=0;i<n;i++){
-    var d=dRoll(false);dDice.push(d);
-    if(dG('d-expl').checked&&d.nat===10)dExtra(0);
-  }
-  for(var j=0;j<nb;j++) dDice.push(dRollBonus());
-  dRiservaUpdate();dRend();
+  for(var i=0;i<n;i++){var d=dRollSingle(false);dDice.push(d);if(dG('d-expl')&&dG('d-expl').checked&&d.natural===10)dRollExtra();}
+  for(var j=0;j<nb;j++)dDice.push(dRollBonus());
+  var rr=dG('d-riserva-row');if(rr)rr.style.display='flex';
+  var rh=dG('d-riserva-hint');if(rh)rh.style.display='none';
+  dRend();
 }
 
 function dTogSel(i){
   if(dForce10){dApplyForce10(i);return;}
   if(dBonusFree){dApplyBonusFree(i);return;}
-  dDice[i].sel=!dDice[i].sel;dRend();
+  if(!dReroll)return;
+  var was=dDice[i].selected;
+  dDice.forEach(function(d){d.selected=false;});
+  dDice[i].selected=!was;
+  dRend();
 }
 function diceReroll(){
-  if(!dReroll)return;dReroll=false;
-  dDice=dDice.map(function(d){
-    if(!d.sel)return d;
-    var nd=dRoll(false);
-    if(dG('d-expl').checked&&nd.nat===10)dExtra(0);
-    return nd;
-  });
+  if(!dReroll)return;
+  var idx=dDice.findIndex(function(d){return d.selected;});
+  if(idx!==-1){
+    dDice.splice(idx,1);
+    var d=dRollSingle(false);dDice.push(d);
+    if(dG('d-expl')&&dG('d-expl').checked&&d.natural===10)dRollExtra();
+    dReroll=false;
+  }
   dRend();
 }
 
@@ -3730,10 +3748,10 @@ function dToggleForce10(){
   dRend();
 }
 function dApplyForce10(i){
-  dDice[i].nat=10;dDice[i].boost=0;
+  dDice[i].natural=10;dDice[i].boost=0;
   dForce10=false;
   var btn=dG('d-btn-force10');if(btn)btn.classList.remove('active');
-  if(dG('d-expl').checked&&!dDice[i].noExplode)dExtra(0);
+  if(dG('d-expl')&&dG('d-expl').checked&&!dDice[i].noExplode)dRollExtra();
   dRend();
 }
 
@@ -3743,7 +3761,7 @@ function dToggleBonusFree(){
   dForce10=false;
   dBonusFree=!dBonusFree;
   if(dBonusFree){
-    dBonusFreeLeft=Math.max(1,parseInt(dG('d-bonus-free-val').value)||1);
+    dBonusFreeLeft=Math.max(1,parseInt((dG('d-bonus-free-val')||{value:'1'}).value)||1);
     var inp=dG('d-bonus-free-val');if(inp)inp.disabled=true;
   } else {
     dBonusFreeLeft=0;
@@ -3754,8 +3772,7 @@ function dToggleBonusFree(){
 }
 function dApplyBonusFree(i){
   if(dBonusFreeLeft<=0){dBonusFree=false;dRend();return;}
-  dDice[i].boost=(dDice[i].boost||0)+1;
-  dBonusFreeLeft--;
+  dDice[i].boost=(dDice[i].boost||0)+1;dBonusFreeLeft--;
   if(dBonusFreeLeft<=0){
     dBonusFree=false;
     var inp=dG('d-bonus-free-val');if(inp)inp.disabled=false;
@@ -3767,109 +3784,153 @@ function dBonusUpdate(){
   var el=dG('d-bonus-remaining');
   if(el)el.textContent=dBonusFree?'Rimasti: '+dBonusFreeLeft:'';
 }
-function dRiservaUpdate(){
-  var row=dG('d-riserva-row');
-  if(row)row.style.display=dDice.length?'flex':'none';
-}
 
-// Partition: greedy best-of-10/15
-function dBest(vals,tgt,dbl,only15){
+// ─── PARTITION (branch-and-bound ottimale, da index_html_15) ───────────────
+function dFindBestPartition(diceVals, targetMode, doubleInc, only15){
   var lupo=dG('d-lupo')&&dG('d-lupo').checked;
-  var sbarr=dG('d-sbarr')&&dG('d-sbarr').checked;
-  var filtered=vals.map(function(v){return lupo&&v===9?10:v;});
-  if(sbarr)filtered=filtered.filter(function(v){return v%2!==0;});
-  var sorted=filtered.slice().sort(function(a,b){return b-a;});
-  var used=new Array(sorted.length).fill(false);
-  var sets=[];
-  function greedy(threshold,incVal){
-    var changed=true;
-    while(changed){
-      changed=false;
-      var pool=[];
-      for(var i2=0;i2<sorted.length;i2++)if(!used[i2])pool.push({idx:i2,val:sorted[i2]});
-      pool.sort(function(a,b){return b.val-a.val;});
-      var combo=[],sum2=0;
-      for(var p=0;p<pool.length;p++){combo.push(pool[p]);sum2+=pool[p].val;if(sum2>=threshold)break;}
-      if(sum2>=threshold){
-        combo.forEach(function(c){used[c.idx]=true;});
-        var ai=dbl&&threshold===10?incVal*2:incVal;
-        sets.push({v:combo.map(function(c){return c.val;}),t:sum2,type:threshold,inc:ai});
-        changed=true;
+  var sbarrBool=dG('d-sbarr')&&dG('d-sbarr').checked;
+  var filtered=diceVals.map(function(v){return lupo&&v===9?10:v;});
+  if(sbarrBool)filtered=filtered.filter(function(v){return v%2!==0;});
+
+  function optimalPartition(pool,threshold){
+    if(!pool.length)return[];
+    var freq=new Array(11).fill(0);
+    pool.forEach(function(v){freq[v]++;});
+    var faces=[];for(var v=1;v<=10;v++)if(freq[v]>0)faces.push(v);
+    var allCombos=[];
+    var tmpC=new Array(11).fill(0);
+    function genCombos(fi,sum){
+      if(sum>=threshold){
+        var ok=true;
+        for(var k2=0;k2<faces.length;k2++){var fv=faces[k2];if(tmpC[fv]>0&&sum-fv>=threshold){ok=false;break;}}
+        if(ok){var s2=faces.reduce(function(a,v2){return a+v2*tmpC[v2];},0);allCombos.push({counts:tmpC.slice(),sum:s2});}
+        return;
+      }
+      if(fi>=faces.length)return;
+      var vv=faces[fi],maxK=Math.floor((threshold-sum)/vv)+1;
+      for(var k3=0;k3<=maxK;k3++){tmpC[vv]=k3;genCombos(fi+1,sum+vv*k3);}
+      tmpC[vv]=0;
+    }
+    genCombos(0,0);
+    if(!allCombos.length)return[];
+    allCombos.sort(function(a,b){return a.sum!==b.sum?a.sum-b.sum:faces.reduce(function(d,v2){return d||a.counts[v2]-b.counts[v2];},0);});
+    var bestTotal=0,bestSolution=null;
+    function ub(f){var tot=0;for(var k4=0;k4<faces.length;k4++)tot+=faces[k4]*f[faces[k4]];return Math.floor(tot/threshold);}
+    function bnb(idx,f,count,choices){
+      var u=count+ub(f);
+      if(u<=bestTotal)return;
+      if(u===count){if(count>bestTotal){bestTotal=count;bestSolution=choices.slice();}return;}
+      if(idx===allCombos.length){if(count>bestTotal){bestTotal=count;bestSolution=choices.slice();}return;}
+      var counts2=allCombos[idx].counts;
+      var maxK2=Infinity;
+      for(var k5=0;k5<faces.length;k5++){var fv2=faces[k5];if(counts2[fv2]>0)maxK2=Math.min(maxK2,Math.floor(f[fv2]/counts2[fv2]));}
+      if(maxK2===Infinity)maxK2=0;
+      maxK2=Math.min(maxK2,ub(f));
+      for(var k6=maxK2;k6>=0;k6--){
+        var nf=f.slice();for(var k7=0;k7<faces.length;k7++)nf[faces[k7]]-=counts2[faces[k7]]*k6;
+        choices.push(k6);bnb(idx+1,nf,count+k6,choices);choices.pop();
+        if(bestTotal>=u)break;
       }
     }
+    bnb(0,freq.slice(),0,[]);
+    var sets2=[];
+    if(bestSolution){bestSolution.forEach(function(k8,ci){if(!k8)return;var c2=allCombos[ci].counts;var vals2=[];for(var k9=0;k9<faces.length;k9++)for(var j2=0;j2<c2[faces[k9]];j2++)vals2.push(faces[k9]);for(var i2=0;i2<k8;i2++)sets2.push(vals2.slice());});}
+    return sets2;
   }
-  if(only15){greedy(15,1);}
-  else{greedy(15,2);greedy(10,1);}
-  var lft=[];for(var k=0;k<sorted.length;k++)if(!used[k])lft.push(sorted[k]);
-  var tot=sets.reduce(function(a,s){return a+s.inc;},0);
-  return{sets:sets,leftovers:lft,totalIncrements:tot};
+
+  var sorted=filtered.slice().sort(function(a,b){return a-b;});
+  var n2=sorted.length;
+  var usedMask=new Array(n2).fill(false);
+  var sets3=[];
+
+  function applyPass(threshold,incValue,pool,poolIndices){
+    var subsets=optimalPartition(pool,threshold);
+    subsets.forEach(function(vals3){
+      var tmpIdx=poolIndices.slice();
+      vals3.forEach(function(vv2){
+        var pos=tmpIdx.findIndex(function(idx2){return sorted[idx2]===vv2&&!usedMask[idx2];});
+        if(pos!==-1){usedMask[tmpIdx[pos]]=true;tmpIdx.splice(pos,1);}
+      });
+      var sum3=vals3.reduce(function(a,b){return a+b;},0);
+      var ai=doubleInc&&threshold===10?incValue*2:incValue;
+      sets3.push({v:vals3,t:sum3,type:threshold,inc:ai});
+    });
+  }
+
+  var allIdx=sorted.map(function(_,i){return i;});
+  if(only15){applyPass(15,1,sorted,allIdx);}
+  else if(targetMode===15){applyPass(15,2,sorted,allIdx);var rem=allIdx.filter(function(i){return !usedMask[i];});applyPass(10,1,rem.map(function(i){return sorted[i];}),rem);}
+  else{applyPass(10,1,sorted,allIdx);}
+
+  var leftovers=sorted.filter(function(_,i){return !usedMask[i];});
+  var totalIncrements=sets3.reduce(function(acc,s){return acc+s.inc;},0);
+  return{sets:sets3,leftovers:leftovers,totalIncrements:totalIncrements};
 }
 
-function dGioiaCheck(lft,tgt,only15){
-  if(!lft.length)return null;
+// Gioia di Vivere
+function dGioiaCheck(leftovers,targetMode,only15){
+  if(!leftovers.length)return null;
   var threshold=only15?15:10;
-  var sorted=lft.slice().sort(function(a,b){return b-a;});
+  var sorted=leftovers.slice().sort(function(a,b){return b-a;});
   var cap=Math.min(sorted.length,20);
   var sub=sorted.slice(0,cap);
   for(var mask=1;mask<(1<<cap);mask++){
-    var sum3=0;
-    for(var b2=0;b2<cap;b2++)if(mask&(1<<b2))sum3+=sub[b2];
-    if(sum3===threshold-1)return sum3;
+    var sum4=0;for(var b2=0;b2<cap;b2++)if(mask&(1<<b2))sum4+=sub[b2];
+    if(sum4===threshold-1)return sum4;
   }
   return null;
 }
 
 function dRend(){
   if(!dDice.length)return;
-  var tgt=parseInt((dG('d-target')||{value:'10'}).value)||10;
-  var dbl=dG('d-double')&&dG('d-double').checked&&!dG('d-only15').checked;
+  var target=parseInt((dG('d-target')||{value:'10'}).value)||10;
+  var dbl=dG('d-double')&&dG('d-double').checked&&!(dG('d-only15')&&dG('d-only15').checked);
   var only15=dG('d-only15')&&dG('d-only15').checked;
   var useGioia=dG('d-gioia')&&dG('d-gioia').checked;
-  var rd=dG('dice-results');
-  var anysel=dDice.some(function(d){return d.sel;});
+  var rd=dG('dice-results');if(!rd)return;
+  var anysel=dDice.some(function(d){return d.selected;});
   var rr=dG('d-reroll');
   if(rr)rr.style.display=(dReroll&&anysel&&!dForce10&&!dBonusFree)?'block':'none';
 
-  // Dice display
-  var h='<div class="dice-section-title">DADI LANCIATI</div><div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:14px">';
+  var h='<div class="dice-section-title">DADI LANCIATI<\/div><div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:14px">';
   dDice.forEach(function(d,i){
     var cls='die';
     if(dForce10)cls+=' die-force10';
     else if(dBonusFree)cls+=' die-bonus-mode';
-    else if(d.sel)cls+=' selected';
+    else if(d.selected)cls+=' selected';
     if(d.boost>0&&!dForce10&&!dBonusFree)cls+=' die-boosted';
     if(d.noExplode)cls+=' no-explode';
-    var extB=d.exploded?'<span class="ext-badge">+</span>':'';
-    var boostB=d.boost>0?'<span class="boost-badge">+'+d.boost+'</span>':'';
-    var lockB=d.noExplode?'<span class="lock-badge">&#128274;</span>':'';
-    var bonusL=d.bonus>0?'<span class="bonus-label">+'+d.bonus+'</span>':'';
-    h+='<div class="'+cls+'" onclick="dTogSel('+i+')">'+d.nat+bonusL+extB+boostB+lockB+'</div>';
+    var extB=d.exploded?'<span class="ext-badge">EXT<\/span>':'';
+    var boostB=d.boost>0?'<span class="boost-badge">+'+d.boost+'<\/span>':'';
+    var lockB=d.noExplode?'<span class="lock-badge">&#128274;<\/span>':'';
+    var bonusL=d.bonus>0?'<span class="bonus-label">+'+d.bonus+'<\/span>':'';
+    h+='<div class="'+cls+'" onclick="dTogSel('+i+')">'+d.natural+bonusL+extB+boostB+lockB+'<\/div>';
   });
-  h+='</div>';
+  h+='<\/div>';
 
-  // Results
-  var res=dBest(dDice.map(function(d){return dEffVal(d);}),tgt,dbl,only15);
+  var res=dFindBestPartition(dDice.map(function(d){return dEffVal(d);}),target,dbl,only15);
   var incWord=res.totalIncrements===1?'Incremento':'Incrementi';
-  h+='<div class="summary-box">'+res.totalIncrements+' '+incWord+'</div>';
+  h+='<div class="summary-box">'+res.totalIncrements+' '+incWord+'<\/div>';
 
   if(res.sets.length){
-    h+='<div class="dice-section-title">COMBINAZIONI</div>';
+    h+='<div class="dice-section-title">COMBINAZIONI<\/div>';
     res.sets.forEach(function(s){
-      var cls=s.type===15?'set-15':'set-10';
-      h+='<div class="set '+cls+'"><span>'+s.v.join(' + ')+' = <b>'+s.t+'</b></span><span class="inc-badge">+'+s.inc+' INC</span></div>';
+      var cls2=s.type===15?'set-15':'set-10';
+      h+='<div class="set '+cls2+'"><span>'+s.v.join(' + ')+' = <b>'+s.t+'<\/b><\/span><span class="inc-badge">+'+s.inc+' INC<\/span><\/div>';
     });
   }
   if(res.leftovers.length){
-    h+='<div class="dice-section-title">SCARTI</div><div class="waste-box">'+res.leftovers.slice().sort(function(a,b){return b-a;}).join(', ')+'</div>';
+    h+='<div class="dice-section-title">SCARTI<\/div><div class="waste-box">'+res.leftovers.slice().sort(function(a,b){return b-a;}).join(', ')+'<\/div>';
     if(useGioia){
-      var gr=dGioiaCheck(res.leftovers,tgt,only15);
-      if(gr!==null)h+='<div class="gioia-hint">✨ Gioia di Vivere: aggiungi +1 a '+gr+' → '+(gr+1)+' per un Incremento!</div>';
+      var gr=dGioiaCheck(res.leftovers,target,only15);
+      if(gr!==null)h+='<div class="gioia-hint">&#10024; Gioia di Vivere: aggiungi +1 a '+gr+' → '+(gr+1)+' per un Incremento!<\/div>';
     }
   }
   rd.innerHTML=h;
-  dRiservaUpdate();
+  var rr2=dG('d-riserva-row');if(rr2)rr2.style.display=dDice.length?'flex':'none';
 }
-
+// ===== BACKGROUND SELECTION =====
+var _bgSelected = null;
 
 function renderBgList(){
   var list=document.getElementById('bg-list');if(!list)return;
@@ -3887,10 +3948,7 @@ function renderBgList(){
   items.forEach(function(b){
     var div=document.createElement('div');
     div.style.cssText='padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.15s';
-    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center">'
-      +'<span style="font-weight:600;font-size:0.88rem">'+escH(b.nome)+'<\/span>'
-      +'<span style="font-size:0.68rem;color:var(--text-muted);white-space:nowrap;margin-left:8px">'+escH(b.nazione)+'<\/span>'
-      +'<\/div>';
+    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;font-size:0.88rem">'+escH(b.nome)+'<\/span><span style="font-size:0.68rem;color:var(--text-muted);white-space:nowrap;margin-left:8px">'+escH(b.nazione)+'<\/span><\/div>';
     div.onmouseenter=function(){this.style.background='var(--card)';};
     div.onmouseleave=function(){this.style.background='';};
     div.onclick=function(){selectBackground(b);};
@@ -3898,43 +3956,18 @@ function renderBgList(){
   });
 }
 
-function renderBgChips(){
-  var el=document.getElementById('bg-applicati-chips');if(!el)return;
-  var list=D.p.bgApplicati||[];
-  if(!list.length){el.innerHTML='';return;}
-  el.innerHTML=list.map(function(b,i){
-    return '<div style="display:inline-flex;align-items:center;gap:4px;background:var(--card2);border:1px solid var(--gold);border-radius:20px;padding:3px 10px 3px 12px;font-size:0.72rem">'
-      +'<span style="color:var(--gold)">'+escH(b.nome)+'<\/span>'
-      +'<button onclick="removeBgApplicato('+i+')" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;padding:0 2px;line-height:1">&#10005;<\/button>'
-      +'<\/div>';
-  }).join('');
-}
-function removeBgApplicato(i){
-  if(!D.p.bgApplicati)return;
-  D.p.bgApplicati.splice(i,1);
-  if(isCreazione())D.p._bgApplicati=Math.max(0,(D.p._bgApplicati||1)-1);
-  renderBgChips();save();
-}
-function openBgModal(){
-  var m=document.getElementById('bg-modal');if(m)m.classList.add('open');
-  renderBgList();
-}
-function closeBgModal(){
-  var m=document.getElementById('bg-modal');if(m)m.classList.remove('open');
-}
 function initBgNazioni(man){
   var sel=document.getElementById('bg-filter-nazione');if(!sel)return;
   var filtered=man?BDB.filter(function(b){return b.manuale===man;}):BDB;
   var nazioni=[...new Set(filtered.map(function(b){return b.nazione;}))].sort();
   sel.innerHTML='<option value="">Tutte le nazioni<\/option>';
-  nazioni.forEach(function(n){
-    var opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);
-  });
+  nazioni.forEach(function(n){var opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.appendChild(opt);});
 }
+
 function onBgManChange(){
   var man=(document.getElementById('bg-filter-manuale')||{value:''}).value;
   initBgNazioni(man);
-  document.getElementById('bg-filter-nazione').value='';
+  var ns=document.getElementById('bg-filter-nazione');if(ns)ns.value='';
   renderBgList();
 }
 
@@ -3948,13 +3981,19 @@ function selectBackground(b){
   el('bg-sel-pec','» Peculiarità: '+b.peculiarita);
   el('bg-sel-vant',(b.vantaggi||[]).join(', '));
   el('bg-sel-abil',(b.abilita||[]).join(', '));
-  // Scroll bg-selected into view
-  var sd2=document.getElementById('bg-selected');if(sd2)sd2.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function clearBgSel(){
   _bgSelected=null;
   var sd=document.getElementById('bg-selected');if(sd)sd.style.display='none';
+}
+
+function openBgModal(){
+  var m=document.getElementById('bg-modal');if(m)m.classList.add('open');
+  renderBgList();
+}
+function closeBgModal(){
+  var m=document.getElementById('bg-modal');if(m)m.classList.remove('open');
 }
 
 function associaBackground(){
@@ -3976,18 +4015,12 @@ function associaBackground(){
 
 function applyBackground(){
   if(!_bgSelected)return;
-  // In modalità creazione: max 2 background
+  var b=_bgSelected;
   if(isCreazione()){
     var bgCount=(D.p._bgApplicati||0);
-    if(bgCount>=2){
-      alert('In Modalità Creazione puoi applicare al massimo 2 Background.');
-      return;
-    }
+    if(bgCount>=2){alert('In Modalità Creazione puoi applicare al massimo 2 Background.');return;}
   }
-  var b=_bgSelected;
-  // Add abilità: set each to 1 if currently 0
   var changed=[];
-  // Le chiavi in D.p.abilita corrispondono agli elementi di ABILITA[]
   var abMap={
     'Allettare':'Allettare','Arte della Guerra':'A.d.Guerra','Atletica':'Atletica',
     'Cavalcare':'Cavalcare','Convincere':'Convincere','Empatia':'Empatia',
@@ -3997,12 +4030,8 @@ function applyBackground(){
   };
   (b.abilita||[]).forEach(function(a){
     var key=abMap[a];
-    if(key){
-      if(!D.p.abilita)D.p.abilita={};
-      if(!(D.p.abilita[key]>0)){D.p.abilita[key]=1;changed.push(a);}
-    }
+    if(key){if(!D.p.abilita)D.p.abilita={};if(!(D.p.abilita[key]>0)){D.p.abilita[key]=1;changed.push(a);}}
   });
-  // Add vantaggi from DB (match by nome, add if not already present)
   var added=[];
   (b.vantaggi||[]).forEach(function(vn){
     var already=(D.p.vantaggi||[]).some(function(v){return v.nome===vn;});
@@ -4011,298 +4040,320 @@ function applyBackground(){
       if(dbV){
         if(!D.p.vantaggi)D.p.vantaggi=[];
         D.p.vantaggi.push(Object.assign({},dbV,{note:''}));
-        // Auto-DaM
         if(dbV.nome&&dbV.nome.toLowerCase().includes('duro da uccidere')){
           D.p.dam=true;var tog=document.getElementById('dam-toggle');if(tog)tog.classList.add('on');updateDamIndicator();
         }
         added.push(vn);
       } else {
-        // Add as homebrew
         if(!D.p.vantaggi)D.p.vantaggi=[];
         D.p.vantaggi.push({homebrew:true,nome:vn,desc:'Da background: '+b.nome,cat:'',punti:0,note:''});
         added.push(vn+'*');
       }
     }
   });
-  renderAbilita();renderVantaggi();save();
-  // Feedback
-  var msgs=[];
-  if(added.length)msgs.push('Vantaggi aggiunti: '+added.join(', '));
-  if(changed.length)msgs.push('Abilità portate a 1: '+changed.join(', '));
-  if(!added.length&&!changed.length)msgs.push('Tutto già presente!');
-  // Incrementa contatore background in modalità creazione
-  if(isCreazione()){
-    D.p._bgApplicati=(D.p._bgApplicati||0)+1;
-    msgs.push('Background applicati in creazione: '+D.p._bgApplicati+'/2');
-  }
-  // Salva bg nella lista dei selezionati
   if(!D.p.bgApplicati)D.p.bgApplicati=[];
   if(!D.p.bgApplicati.some(function(x){return x.id===b.id;})){
     D.p.bgApplicati.push({id:b.id,nome:b.nome,nazione:b.nazione,manuale:b.manuale});
   }
   renderBgChips();
-  closeBgModal();
+  renderAbilita();renderVantaggi();
+  if(isCreazione()){D.p._bgApplicati=(D.p._bgApplicati||0)+1;}
+  save();closeBgModal();
+  var msgs=[];
+  if(added.length)msgs.push('Vantaggi aggiunti: '+added.join(', '));
+  if(changed.length)msgs.push('Abilità portate a 1: '+changed.join(', '));
+  if(!msgs.length)msgs.push('Tutto già presente!');
   alert(msgs.join('\n'));
 }
 
-window.onerror=function(msg,src,line,col,err){
-  var box=document.createElement('div');
-  box.style.cssText='position:fixed;top:0;left:0;right:0;background:#c0392b;color:white;padding:10px;z-index:9999;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:50vh;overflow:auto';
-  box.textContent='ERRORE: '+msg+'\nFile: '+src+'\nRiga: '+line+' Col: '+col+'\n'+(err?err.stack:'');
-  document.body.insertBefore(box,document.body.firstChild);
-  return false;
-};
+function renderBgChips(){
+  var el=document.getElementById('bg-applicati-chips');if(!el)return;
+  var list=D.p.bgApplicati||[];
+  if(!list.length){el.innerHTML='';return;}
+  el.innerHTML=list.map(function(b,i){
+    return '<div style="display:inline-flex;align-items:center;gap:4px;background:var(--card2);border:1px solid var(--gold);border-radius:20px;padding:3px 10px 3px 12px;font-size:0.72rem">'
+      +'<span style="color:var(--gold)">'+escH(b.nome)+'<\/span>'
+      +'<button onclick="removeBgApplicato('+i+')" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;padding:0 2px;line-height:1">&#10005;<\/button>'
+      +'<\/div>';
+  }).join('');
+}
+function removeBgApplicato(i){
+  if(!D.p.bgApplicati)return;
+  D.p.bgApplicati.splice(i,1);
+  if(isCreazione())D.p._bgApplicati=Math.max(0,(D.p._bgApplicati||1)-1);
+  renderBgChips();save();
+}
 
+// ===== NAVIGAVIA STREGONERIE =====
+function addArcLettura(){if(!D.str.arcLetture)D.str.arcLetture=[];D.str.arcLetture.push({arcano:'',pos:'dritta',note:''});renderArcanance();save();}
+function delArcLettura(i){D.str.arcLetture.splice(i,1);renderArcanance();save();}
+function renderArcanance(){
+  var el=document.getElementById('arc-letture-list');if(!el)return;
+  var n=document.getElementById('arcanance-note');if(n)n.value=D.str.arcNote||'';
+  el.innerHTML='';
+  (D.str.arcLetture||[]).forEach(function(l,i){
+    var div=document.createElement('div');div.className='entry-card';div.style.marginBottom='8px';
+    var row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+    var inp=document.createElement('input');inp.className='field-input arcl-arcano';inp.dataset.i=i;inp.value=l.arcano||'';inp.placeholder='Arcano…';inp.style.flex='1';
+    var sel=document.createElement('select');sel.className='field-input arcl-pos';sel.dataset.i=i;sel.style.cssText='max-width:100px;font-family:var(--font-body)';
+    sel.innerHTML='<option value="dritta" '+(l.pos==='dritta'?'selected':'')+'>Dritta<\/option><option value="rovescia" '+(l.pos==='rovescia'?'selected':'')+'>Rovescia<\/option>';
+    var del=document.createElement('button');del.className='del-btn';del.innerHTML='&#10005;';del.onclick=function(){delArcLettura(i);};
+    row.appendChild(inp);row.appendChild(sel);row.appendChild(del);
+    var ta=document.createElement('textarea');ta.className='field-input arcl-note';ta.dataset.i=i;ta.rows=2;ta.placeholder='Interpretazione…';ta.style.marginTop='4px';ta.value=l.note||'';
+    div.appendChild(row);div.appendChild(ta);el.appendChild(div);
+  });
+  el.oninput=function(e){var t=e.target,i=parseInt(t.dataset.i);if(isNaN(i))return;if(t.classList.contains('arcl-arcano')){D.str.arcLetture[i].arcano=t.value;save();}else if(t.classList.contains('arcl-note')){D.str.arcLetture[i].note=t.value;save();}};
+  el.onchange=function(e){var t=e.target,i=parseInt(t.dataset.i);if(!isNaN(i)&&t.classList.contains('arcl-pos')){D.str.arcLetture[i].pos=t.value;save();}};
+}
+function updArcLett(i,f,v){if(!D.str.arcLetture[i])return;D.str.arcLetture[i][f]=v;save();}
+function addCanto(tipo){if(!D.str.canti)D.str.canti=[];D.str.canti.push({nome:'',tipo:tipo,effetto:'',usato:false});renderCantus();save();}
+function delCanto(i){D.str.canti.splice(i,1);renderCantus();save();}
+function updCanto(i,f,v){if(D.str.canti&&D.str.canti[i])D.str.canti[i][f]=v;if(f==='tipo')renderCantus();else save();}
+function renderCantus(){
+  var el=document.getElementById('cantus-list');if(!el)return;el.innerHTML='';
+  (D.str.canti||[]).forEach(function(c,i){
+    var div=document.createElement('div');div.className='glamour-item';
+    var tL=c.tipo==='maggiore'?'MAGGIORE':'MINORE',tC=c.tipo==='maggiore'?'badge-major':'badge-minor';
+    div.innerHTML='<div class="glamour-header cant-toggle"><div style="display:flex;align-items:center;gap:6px;flex:1"><input type="checkbox" class="cant-usato-hdr" data-i="'+i+'" '+(c.usato?'checked':'')+' style="cursor:pointer;accent-color:var(--crimson);width:16px;height:16px"><span class="cant-nome-disp" style="'+(c.usato?'text-decoration:line-through;color:var(--text-muted)':'')+'">'+escH(c.nome||'Canto '+(i+1))+'<\/span><span class="'+tC+'">'+tL+'<\/span><\/div><div style="display:flex;gap:6px"><span style="font-size:0.7rem;color:var(--text-muted)">&#9660;<\/span><button class="del-btn cant-del" data-i="'+i+'">&#10005;<\/button><\/div><\/div><div class="glamour-body"><div class="field-row"><span class="field-label">Nome<\/span><input class="field-input cant-nome" data-i="'+i+'" value="'+escH(c.nome||'')+'"><\/div><div class="field-row"><span class="field-label">Tipo<\/span><select class="field-input cant-tipo" data-i="'+i+'" style="font-family:var(--font-body)"><option value="minore" '+(c.tipo==='minore'?'selected':'')+'>Minore<\/option><option value="maggiore" '+(c.tipo==='maggiore'?'selected':'')+'>Maggiore<\/option><\/select><\/div><textarea class="field-input cant-eff" data-i="'+i+'" rows="3" placeholder="Effetto…">'+escH(c.effetto||'')+'<\/textarea><\/div>';
+    el.appendChild(div);
+  });
+  el.onclick=function(e){var d=e.target.closest('.cant-del');if(d){e.stopPropagation();delCanto(parseInt(d.dataset.i));return;}var cb=e.target.closest('.cant-usato-hdr');if(cb){e.stopPropagation();var ii=parseInt(cb.dataset.i);D.str.canti[ii].usato=cb.checked;save();return;}var t2=e.target.closest('.cant-toggle');if(t2&&!e.target.closest('.glamour-body')){var b2=t2.nextElementSibling;if(b2)b2.classList.toggle('open');}};
+  el.onchange=function(e){var t=e.target,ii=parseInt(t.dataset.i);if(isNaN(ii))return;if(t.classList.contains('cant-tipo')){D.str.canti[ii].tipo=t.value;renderCantus();}};
+  el.oninput=function(e){var t=e.target,ii=parseInt(t.dataset.i);if(isNaN(ii))return;if(t.classList.contains('cant-nome')){D.str.canti[ii].nome=t.value;var d2=el.querySelectorAll('.cant-nome-disp')[ii];if(d2)d2.textContent=t.value||'Canto '+(ii+1);save();}else if(t.classList.contains('cant-eff')){D.str.canti[ii].effetto=t.value;save();}};
+}
+function selEstirpe(elem){D.str.estirpeEl=elem;var fb=document.getElementById('est-fuego');if(fb)fb.classList.toggle('active',elem==='fuego');var ab=document.getElementById('est-agua');if(ab)ab.classList.toggle('active',elem==='agua');save();}
+function addLezione(tipo){if(!D.str.lezioni)D.str.lezioni=[];D.str.lezioni.push({nome:'',tipo:tipo,effetto:'',usata:false});renderEstirpe();save();}
+function delLezione(i){D.str.lezioni.splice(i,1);renderEstirpe();save();}
+function updLezione(i,f,v){if(D.str.lezioni&&D.str.lezioni[i])D.str.lezioni[i][f]=v;if(f==='tipo')renderEstirpe();else save();}
+function renderEstirpe(){
+  var estEl=D.str.estirpeEl||'';
+  var fb=document.getElementById('est-fuego');if(fb)fb.classList.toggle('active',estEl==='fuego');
+  var ab=document.getElementById('est-agua');if(ab)ab.classList.toggle('active',estEl==='agua');
+  var el=document.getElementById('estirpe-list');if(!el)return;el.innerHTML='';
+  (D.str.lezioni||[]).forEach(function(l,i){
+    var div=document.createElement('div');div.className='glamour-item';
+    var tL=l.tipo==='maggiore'?'MAGGIORE':'MINORE',tC=l.tipo==='maggiore'?'badge-major':'badge-minor';
+    div.innerHTML='<div class="glamour-header lez-toggle"><div style="display:flex;align-items:center;gap:6px;flex:1"><input type="checkbox" class="lez-usata-cb" data-i="'+i+'" '+(l.usata?'checked':'')+' style="cursor:pointer;accent-color:var(--crimson);width:16px;height:16px"><span class="lez-nome-disp" style="'+(l.usata?'text-decoration:line-through;color:var(--text-muted)':'')+'">'+escH(l.nome||'Lezione '+(i+1))+'<\/span><span class="'+tC+'">'+tL+'<\/span><\/div><div style="display:flex;gap:6px"><span style="font-size:0.7rem;color:var(--text-muted)">&#9660;<\/span><button class="del-btn lez-del" data-i="'+i+'">&#10005;<\/button><\/div><\/div><div class="glamour-body"><div class="field-row"><span class="field-label">Nome<\/span><input class="field-input lez-nome" data-i="'+i+'" value="'+escH(l.nome||'')+'"><\/div><div class="field-row"><span class="field-label">Tipo<\/span><select class="field-input lez-tipo" data-i="'+i+'" style="font-family:var(--font-body)"><option value="minore" '+(l.tipo==='minore'?'selected':'')+'>Minore<\/option><option value="maggiore" '+(l.tipo==='maggiore'?'selected':'')+'>Maggiore<\/option><\/select><\/div><textarea class="field-input lez-eff" data-i="'+i+'" rows="3" placeholder="Effetto…">'+escH(l.effetto||'')+'<\/textarea><\/div>';
+    el.appendChild(div);
+  });
+  el.onclick=function(e){var d=e.target.closest('.lez-del');if(d){e.stopPropagation();delLezione(parseInt(d.dataset.i));return;}var cb=e.target.closest('.lez-usata-cb');if(cb){e.stopPropagation();var ii=parseInt(cb.dataset.i);D.str.lezioni[ii].usata=cb.checked;save();return;}var t2=e.target.closest('.lez-toggle');if(t2&&!e.target.closest('.glamour-body')){var b2=t2.nextElementSibling;if(b2)b2.classList.toggle('open');}};
+  el.onchange=function(e){var t=e.target,ii=parseInt(t.dataset.i);if(isNaN(ii))return;if(t.classList.contains('lez-tipo')){D.str.lezioni[ii].tipo=t.value;renderEstirpe();}};
+  el.oninput=function(e){var t=e.target,ii=parseInt(t.dataset.i);if(isNaN(ii))return;if(t.classList.contains('lez-nome')){D.str.lezioni[ii].nome=t.value;var cards=el.querySelectorAll('.glamour-item');if(cards[ii]){var nd=cards[ii].querySelector('.lez-nome-disp');if(nd)nd.textContent=t.value||'Lezione '+(ii+1);}save();}else if(t.classList.contains('lez-eff')){D.str.lezioni[ii].effetto=t.value;save();}};
+}
+function addRisvegliato(){if(!D.str.risvegliati)D.str.risvegliati=[];D.str.risvegliati.push({nome:'',tipo:'bambola',note:''});renderRisveglio();save();}
+function delRisvegliato(i){D.str.risvegliati.splice(i,1);renderRisveglio();save();}
+function renderRisveglio(){
+  var el=document.getElementById('risveglio-list');if(!el)return;
+  var n=document.getElementById('risveglio-note');if(n)n.value=D.str.risvNote||'';
+  el.innerHTML='';
+  (D.str.risvegliati||[]).forEach(function(r,i){
+    var div=document.createElement('div');div.className='entry-card';div.style.marginBottom='8px';
+    var inp=document.createElement('div');inp.style.cssText='display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+    var ni=document.createElement('input');ni.className='field-input risv-nome';ni.dataset.i=i;ni.value=r.nome||'';ni.placeholder='Nome bersaglio…';ni.style.flex='1';
+    var ts=document.createElement('select');ts.className='field-input risv-tipo';ts.dataset.i=i;ts.style.cssText='max-width:130px;font-family:var(--font-body)';
+    ts.innerHTML='<option value="bambola" '+(r.tipo==='bambola'?'selected':'')+'>Bambola<\/option><option value="risvegliato" '+(r.tipo==='risvegliato'?'selected':'')+'>Risvegliato<\/option>';
+    var db=document.createElement('button');db.className='del-btn risv-del';db.dataset.i=i;db.innerHTML='&#10005;';
+    inp.appendChild(ni);inp.appendChild(ts);inp.appendChild(db);
+    var ta=document.createElement('textarea');ta.className='field-input risv-note';ta.dataset.i=i;ta.rows=2;ta.placeholder='Legame, effetti attivi…';ta.style.marginTop='4px';ta.value=r.note||'';
+    div.appendChild(inp);div.appendChild(ta);el.appendChild(div);
+  });
+  el.oninput=function(e){var t=e.target,i=parseInt(t.dataset.i);if(isNaN(i))return;if(t.classList.contains('risv-nome')){D.str.risvegliati[i].nome=t.value;save();}else if(t.classList.contains('risv-note')){D.str.risvegliati[i].note=t.value;save();}};
+  el.onchange=function(e){var t=e.target,i=parseInt(t.dataset.i);if(!isNaN(i)&&t.classList.contains('risv-tipo')){D.str.risvegliati[i].tipo=t.value;save();}};
+  el.onclick=function(e){var b=e.target.closest('.risv-del');if(b)delRisvegliato(parseInt(b.dataset.i));};
+}
+function updRisv(i,f,v){if(!D.str.risvegliati[i])return;D.str.risvegliati[i][f]=v;save();}
+function addMouo(){if(!D.str.mouo)D.str.mouo=[];D.str.mouo.push({nome:'',min:'',mag:'',sbiad:false});renderMouo();save();}
+function delMouo(i){D.str.mouo.splice(i,1);renderMouo();save();}
+function updMouo(i,f,v){if(!D.str.mouo||!D.str.mouo[i])return;D.str.mouo[i][f]=v;if(f==='nome')renderMouo();else save();}
+function renderMouo(){
+  var el=document.getElementById('mouo-list');if(!el)return;var nomi=['Bussola','Corpo','Nodo','Onda','Saetta','Stella'];el.innerHTML='';
+  (D.str.mouo||[]).forEach(function(m,i){
+    var div=document.createElement('div');div.className='entry-card';div.style.marginBottom='8px';
+    var hdr=document.createElement('div');hdr.style.cssText='display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px';
+    var sel=document.createElement('select');sel.className='field-input mouo-nome';sel.dataset.i=i;sel.style.cssText='flex:1;font-family:var(--font-body)';
+    sel.innerHTML='<option value="">— Tipo —<\/option>'+nomi.map(function(n){return '<option '+(m.nome===n?'selected':'')+'>'+n+'<\/option>';}).join('');
+    var sbl=document.createElement('label');sbl.style.cssText='display:flex;align-items:center;gap:4px;font-size:0.75rem;color:var(--crimson)';
+    var sbc=document.createElement('input');sbc.type='checkbox';sbc.className='mouo-sbiad';sbc.dataset.i=i;if(m.sbiad)sbc.checked=true;
+    sbl.appendChild(sbc);sbl.appendChild(document.createTextNode(' Sbiadito'));
+    var db=document.createElement('button');db.className='del-btn mouo-del';db.dataset.i=i;db.innerHTML='&#10005;';
+    hdr.appendChild(sel);hdr.appendChild(sbl);hdr.appendChild(db);
+    var ml=document.createElement('div');ml.style.cssText='font-size:0.7rem;color:var(--text-muted);margin-bottom:4px;font-family:var(--font-title)';ml.textContent='POTERE MINORE';
+    var ma=document.createElement('textarea');ma.className='field-input mouo-min';ma.dataset.i=i;ma.rows=2;ma.placeholder='Effetto Minore…';ma.style.marginBottom='6px';ma.value=m.min||'';
+    var mgl=document.createElement('div');mgl.style.cssText='font-size:0.7rem;color:var(--gold);margin-bottom:4px;font-family:var(--font-title)';mgl.textContent='POTERE MAGGIORE';
+    var mga=document.createElement('textarea');mga.className='field-input mouo-mag';mga.dataset.i=i;mga.rows=2;mga.placeholder='Effetto Maggiore…';mga.value=m.mag||'';
+    div.appendChild(hdr);div.appendChild(ml);div.appendChild(ma);div.appendChild(mgl);div.appendChild(mga);el.appendChild(div);
+  });
+  el.oninput=function(e){var t=e.target,i=parseInt(t.dataset.i);if(isNaN(i))return;if(t.classList.contains('mouo-min')){D.str.mouo[i].min=t.value;save();}else if(t.classList.contains('mouo-mag')){D.str.mouo[i].mag=t.value;save();}};
+  el.onchange=function(e){var t=e.target,i=parseInt(t.dataset.i);if(isNaN(i))return;if(t.classList.contains('mouo-nome')){D.str.mouo[i].nome=t.value;save();}else if(t.classList.contains('mouo-sbiad')){D.str.mouo[i].sbiad=t.checked;save();}};
+  el.onclick=function(e){var b=e.target.closest('.mouo-del');if(b)delMouo(parseInt(b.dataset.i));};
+}
+function addSogno(){if(!D.str.sogni)D.str.sogni=[];D.str.sogni.push({nome:'',effetto:'',adunanza:''});renderSognatore();save();}
+function delSogno(i){D.str.sogni.splice(i,1);renderSognatore();save();}
+function renderSognatore(){
+  var el=document.getElementById('sognatore-list');if(!el)return;
+  var t=document.getElementById('sognatore-totem');if(t)t.value=D.str.sognatoreTotem||'';
+  el.innerHTML='';
+  (D.str.sogni||[]).forEach(function(s,i){
+    var div=document.createElement('div');div.className='glamour-item';
+    div.innerHTML='<div class="glamour-header sogno-toggle"><span class="sogno-nome-disp">'+escH(s.nome||'Sogno '+(i+1))+'<\/span><div style="display:flex;gap:6px"><span style="font-size:0.7rem;color:var(--text-muted)">&#9660;<\/span><button class="del-btn sogno-del" data-i="'+i+'">&#10005;<\/button><\/div><\/div><div class="glamour-body"><div class="field-row"><span class="field-label">Nome<\/span><input class="field-input sogno-nome" data-i="'+i+'" value="'+escH(s.nome||'')+'"><\/div><div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px;font-family:var(--font-title)">EFFETTO<\/div><textarea class="field-input sogno-eff" data-i="'+i+'" rows="2" placeholder="Effetto…">'+escH(s.effetto||'')+'<\/textarea><div style="font-size:0.7rem;color:var(--gold);margin-top:6px;margin-bottom:4px;font-family:var(--font-title)">ADUNANZA<\/div><textarea class="field-input sogno-adun" data-i="'+i+'" rows="2" placeholder="Adunanza…">'+escH(s.adunanza||'')+'<\/textarea><\/div>';
+    el.appendChild(div);
+  });
+  el.onclick=function(e){var d=e.target.closest('.sogno-del');if(d){e.stopPropagation();delSogno(parseInt(d.dataset.i));return;}var t2=e.target.closest('.sogno-toggle');if(t2&&!e.target.closest('.glamour-body')){var b2=t2.nextElementSibling;if(b2)b2.classList.toggle('open');}};
+  el.oninput=function(e){var t=e.target,i=parseInt(t.dataset.i);if(isNaN(i))return;if(t.classList.contains('sogno-nome')){D.str.sogni[i].nome=t.value;var d2=el.querySelectorAll('.sogno-nome-disp')[i];if(d2)d2.textContent=t.value||'Sogno '+(i+1);save();}else if(t.classList.contains('sogno-eff')){D.str.sogni[i].effetto=t.value;save();}else if(t.classList.contains('sogno-adun')){D.str.sogni[i].adunanza=t.value;save();}};
+}
+function addBabaLezione(){if(!D.str.babaLezioni)D.str.babaLezioni=[];D.str.babaLezioni.push({restrizione:'',penitenza:'',doni:[{nome:'',effetto:''},{nome:'',effetto:''}]});renderBabaYaga();save();}
+function delBabaLezione(i){D.str.babaLezioni.splice(i,1);renderBabaYaga();save();}
+function addBabaDono(i){if(!D.str.babaLezioni[i].doni)D.str.babaLezioni[i].doni=[];D.str.babaLezioni[i].doni.push({nome:'',effetto:''});renderBabaYaga();save();}
+function renderBabaYaga(){
+  var list=document.getElementById('babayaga-list');if(!list)return;list.innerHTML='';
+  (D.str.babaLezioni||[]).forEach(function(l,i){
+    var div=document.createElement('div');div.className='entry-card';
+    var doni=l.doni||[];
+    var doniHTML=doni.map(function(d,j){return '<div style="border:1px solid var(--border);border-radius:6px;padding:8px;margin-bottom:6px;background:var(--card2)"><div class="field-row"><span class="field-label">Dono '+(j+1)+'<\/span><input class="field-input baba-dono-nome" data-i="'+i+'" data-j="'+j+'" value="'+escH(d.nome||'')+'" placeholder="Es. Comando…"><\/div><textarea class="field-input baba-dono-eff" data-i="'+i+'" data-j="'+j+'" rows="2" placeholder="Effetto…">'+escH(d.effetto||'')+'<\/textarea><\/div>';}).join('');
+    var rLabel=l.restrizione?' — <span style="font-size:0.75rem;color:var(--crimson)">'+escH(l.restrizione)+'<\/span>':'';
+    div.innerHTML='<div class="entry-header" onclick="togE(this)"><span class="entry-title">Lezione '+(i+1)+rLabel+'<\/span><div style="display:flex;gap:6px"><span style="font-size:0.7rem;color:var(--text-muted)">&#9660;<\/span><button class="del-btn baba-del" data-idx="'+i+'" onclick="event.stopPropagation();delBabaLezione('+i+')">&#10005;<\/button><\/div><\/div><div class="entry-body"><div style="font-family:var(--font-title);font-size:0.7rem;color:var(--crimson);margin-bottom:6px">RESTRIZIONE<\/div><input class="field-input baba-restr" data-i="'+i+'" value="'+escH(l.restrizione||'')+'" placeholder="Es. Altruismo…" style="border-color:var(--crimson);margin-bottom:10px"><div style="font-family:var(--font-title);font-size:0.7rem;color:var(--text-muted);margin-bottom:6px">PENITENZA<\/div><input class="field-input baba-penit" data-i="'+i+'" value="'+escH(l.penitenza||'')+'" placeholder="Es. Aiuta qualcuno…" style="margin-bottom:10px"><div style="font-family:var(--font-title);font-size:0.7rem;color:var(--text-muted);margin-bottom:6px">DONI (1 PE per attivare)<\/div>'+doniHTML+'<button class="add-btn baba-add-dono" data-i="'+i+'" onclick="event.stopPropagation();addBabaDono('+i+')" style="font-size:0.65rem;padding:5px 10px;margin-top:4px">+ DONO<\/button><\/div>';
+    list.appendChild(div);
+  });
+  list.oninput=function(e){
+    var el=e.target,idx2=parseInt(el.dataset.i),jdx=parseInt(el.dataset.j);
+    if(el.classList.contains('baba-restr')){D.str.babaLezioni[idx2].restrizione=el.value;renderBabaYaga();return;}
+    if(el.classList.contains('baba-penit')){D.str.babaLezioni[idx2].penitenza=el.value;save();return;}
+    if(el.classList.contains('baba-dono-nome')){D.str.babaLezioni[idx2].doni[jdx].nome=el.value;save();return;}
+    if(el.classList.contains('baba-dono-eff')){D.str.babaLezioni[idx2].doni[jdx].effetto=el.value;save();return;}
+  };
+}
 
-// ═══════════════════════════════════════════════════
-//  OVERLAY: LOGIN + LISTA PERSONAGGI (SUPABASE)
-// ═══════════════════════════════════════════════════
+// ===== OVERLAY SUPABASE =====
+var OV={user:null,pgId:null,pgList:[],deleteId:null,saveTimer:null,cloudEnabled:false};
 
-var OV = {
-  user: null,
-  pgId: null,
-  pgList: [],
-  deleteId: null,
-  saveTimer: null,
-  cloudEnabled: false,
-};
-
-// ── INIT OVERLAY ──
-async function ovInit() {
-  // Check if Supabase is configured
-  if (SUPABASE_URL.includes('TUOXXX')) {
-    // Not configured yet - go straight offline
-    ovOffline();
-    return;
-  }
-
-  // Check for existing session
-  var s = await sb.auth.getSession();
-  if (s.data.session) {
-    OV.user = s.data.session.user;
-    await ovShowPgList();
-  } else {
-    ovShowScreen('login');
-  }
-
-  // Listen for auth changes
-  sb.auth.onAuthStateChange(async function(event, session) {
-    if (event === 'SIGNED_IN' && session) {
-      OV.user = session.user;
-      await ovShowPgList();
-    } else if (event === 'SIGNED_OUT') {
-      OV.user = null;
-      ovShowScreen('login');
-    }
+async function ovInit(){
+  if(SUPABASE_URL.includes('TUOXXX')){ovOffline();return;}
+  var s=await sb.auth.getSession();
+  if(s.data.session){OV.user=s.data.session.user;await ovShowPgList();}
+  else{ovShowScreen('login');}
+  sb.auth.onAuthStateChange(async function(event,session){
+    if(event==='SIGNED_IN'&&session){OV.user=session.user;await ovShowPgList();}
+    else if(event==='SIGNED_OUT'){OV.user=null;ovShowScreen('login');}
   });
 }
 
-// ── SCREENS ──
-function ovShowScreen(name) {
-  document.getElementById('ov-loading').style.display = 'none';
-  document.getElementById('ov-login').style.display = 'none';
-  document.getElementById('ov-pgs').style.display = 'none';
-  document.getElementById('ov-topbar').style.display = 'none';
-  if (name === 'loading') {
-    document.getElementById('ov-loading').style.display = 'flex';
-  } else if (name === 'login') {
-    document.getElementById('ov-login').style.display = 'flex';
-  } else if (name === 'pgs') {
-    document.getElementById('ov-topbar').style.display = 'flex';
-    document.getElementById('ov-pgs').style.display = 'block';
-    document.getElementById('ov-email').textContent = OV.user ? (OV.user.email || '') : '';
+function ovShowScreen(name){
+  ['ov-loading','ov-login','ov-pgs'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});
+  var tb=document.getElementById('ov-topbar');if(tb)tb.style.display='none';
+  if(name==='loading'){var e=document.getElementById('ov-loading');if(e)e.style.display='flex';}
+  else if(name==='login'){var e=document.getElementById('ov-login');if(e)e.style.display='flex';}
+  else if(name==='pgs'){
+    if(tb)tb.style.display='flex';
+    var e=document.getElementById('ov-pgs');if(e)e.style.display='block';
+    var em=document.getElementById('ov-email');if(em)em.textContent=OV.user?(OV.user.email||''):'';
   }
 }
 
-// ── AUTH ──
-async function ovLoginGoogle() {
-  await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.href }
-  });
+async function ovLoginGoogle(){
+  await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
 }
-
-async function ovLogout() {
-  // Save current pg first
-  if (OV.cloudEnabled) await syncToCloud();
-  // Clear local state
-  OV.user = null; OV.pgId = null; OV.cloudEnabled = false;
-  document.getElementById('btn-back-pgs').style.display = 'none';
-  document.getElementById('overlay').style.display = 'flex';
+async function ovLogout(){
+  if(OV.cloudEnabled)await syncToCloud();
+  OV.user=null;OV.pgId=null;OV.cloudEnabled=false;
+  window._appInited=false;
+  var bb=document.getElementById('btn-back-pgs');if(bb)bb.style.display='none';
+  var ov=document.getElementById('overlay');if(ov)ov.style.display='flex';
   await sb.auth.signOut();
 }
-
-function ovOffline() {
-  // Hide overlay, use localStorage only
-  document.getElementById('overlay').style.display = 'none';
-  try { init(); initBgNazioni(''); renderBgList(); } catch(e) { console.error(e); }
+function ovOffline(){
+  var ov=document.getElementById('overlay');if(ov)ov.style.display='none';
+  try{init();initBgNazioni('');renderBgList();}catch(e){console.error(e);}
 }
 
-// ── PG LIST ──
-async function ovShowPgList() {
+async function ovShowPgList(){
   ovShowScreen('loading');
-  var r = await sb.from('personaggi').select('id,nome,aggiornato_il,dati')
-    .eq('user_id', OV.user.id)
-    .order('aggiornato_il', { ascending: false });
-  if (r.error) { console.error(r.error); ovShowScreen('login'); return; }
-  OV.pgList = r.data || [];
+  var r=await sb.from('personaggi').select('id,nome,aggiornato_il,dati').eq('user_id',OV.user.id).order('aggiornato_il',{ascending:false});
+  if(r.error){console.error(r.error);ovShowScreen('login');return;}
+  OV.pgList=r.data||[];
   ovRenderPgList();
   ovShowScreen('pgs');
 }
 
-function ovEscH(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/<\//g,'&lt;').replace(/>/g,'&gt;');
-}
+function ovEscH(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-function ovRenderPgList() {
-  var grid = document.getElementById('ov-pg-grid');
-  grid.innerHTML = '';
-  if (!OV.pgList.length) {
-    grid.innerHTML = '<div style="color:#7a6e5e;font-size:0.82rem;text-align:center;padding:24px">Nessun personaggio. Creane uno!<\/div>';
-    return;
-  }
-  OV.pgList.forEach(function(pg) {
-    var p = (pg.dati && pg.dati.p) ? pg.dati.p : {};
-    var imgSrc = p.immagine || '';
-    var meta = [p.nazione, p.concetto].filter(Boolean).join(' · ') || '—';
-    var dataStr = new Date(pg.aggiornato_il).toLocaleDateString('it-IT', {day:'2-digit',month:'short',year:'numeric'});
-
-    var card = document.createElement('div');
-    card.style.cssText = 'background:#1a1612;border:1px solid #2e2820;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.2s';
-    card.onmouseenter = function(){ this.style.borderColor='#c8a84c'; };
-    card.onmouseleave = function(){ this.style.borderColor='#2e2820'; };
-
-    var avatar = document.createElement('div');
-    avatar.style.cssText = 'width:42px;height:42px;border-radius:50%;background:#221e18;border:1px solid #2e2820;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#7a6e5e;font-size:1.1rem';
-    avatar.innerHTML = imgSrc ? '<img src="'+ovEscH(imgSrc)+'" style="width:100%;height:100%;object-fit:cover">' : '⚔';
-
-    var info = document.createElement('div');
-    info.style.cssText = 'flex:1;min-width:0;cursor:pointer';
-    info.innerHTML = '<div style="font-size:0.92rem;font-weight:700;color:#e8dcc8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+ovEscH(pg.nome)+'<\/div>'
-      +'<div style="font-size:0.7rem;color:#7a6e5e;margin-top:2px">'+ovEscH(meta)+' · '+dataStr+'<\/div>';
-    info.onclick = function(){ ovOpenPg(pg.id, pg.dati); };
-
-    var btnOpen = document.createElement('button');
-    btnOpen.textContent = 'APRI';
-    btnOpen.style.cssText = 'font-family:inherit;font-size:0.68rem;padding:4px 10px;border-radius:6px;border:1px solid #2e2820;background:transparent;color:#7a6e5e;cursor:pointer;white-space:nowrap';
-    btnOpen.onclick = function(e){ e.stopPropagation(); ovOpenPg(pg.id, pg.dati); };
-
-    var btnDel = document.createElement('button');
-    btnDel.textContent = '✕';
-    btnDel.style.cssText = 'font-family:inherit;font-size:0.68rem;padding:4px 8px;border-radius:6px;border:1px solid #2e2820;background:transparent;color:#7a6e5e;cursor:pointer';
-    btnDel.onmouseenter = function(){ this.style.borderColor='#8b2020'; this.style.color='#8b2020'; };
-    btnDel.onmouseleave = function(){ this.style.borderColor='#2e2820'; this.style.color='#7a6e5e'; };
-    btnDel.onclick = function(e){ e.stopPropagation(); ovAskDelete(pg.id, pg.nome); };
-
-    var actions = document.createElement('div');
-    actions.style.cssText = 'display:flex;gap:6px';
-    actions.appendChild(btnOpen); actions.appendChild(btnDel);
-
-    card.appendChild(avatar); card.appendChild(info); card.appendChild(actions);
-    grid.appendChild(card);
+function ovRenderPgList(){
+  var grid=document.getElementById('ov-pg-grid');if(!grid)return;grid.innerHTML='';
+  if(!OV.pgList.length){grid.innerHTML='<div style="color:#7a6e5e;font-size:0.82rem;text-align:center;padding:24px">Nessun personaggio. Creane uno!</div>';return;}
+  OV.pgList.forEach(function(pg){
+    var p=(pg.dati&&pg.dati.p)?pg.dati.p:{};
+    var imgSrc=p.immagine||'';
+    var meta=[p.nazione,p.concetto].filter(Boolean).join(' · ')||'—';
+    var dataStr=new Date(pg.aggiornato_il).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'});
+    var card=document.createElement('div');
+    card.style.cssText='background:#1a1612;border:1px solid #2e2820;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.2s';
+    card.onmouseenter=function(){this.style.borderColor='#c8a84c';};card.onmouseleave=function(){this.style.borderColor='#2e2820';};
+    var avatar=document.createElement('div');avatar.style.cssText='width:42px;height:42px;border-radius:50%;background:#221e18;border:1px solid #2e2820;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#7a6e5e;font-size:1.1rem';
+    avatar.innerHTML=imgSrc?'<img src="'+ovEscH(imgSrc)+'" style="width:100%;height:100%;object-fit:cover">':'⚔';
+    var info=document.createElement('div');info.style.cssText='flex:1;min-width:0;cursor:pointer';
+    info.innerHTML='<div style="font-size:0.92rem;font-weight:700;color:#e8dcc8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+ovEscH(pg.nome)+'</div><div style="font-size:0.7rem;color:#7a6e5e;margin-top:2px">'+ovEscH(meta)+' · '+dataStr+'</div>';
+    info.onclick=function(){ovOpenPg(pg.id,pg.dati);};
+    var btnOpen=document.createElement('button');btnOpen.textContent='APRI';btnOpen.style.cssText='font-family:inherit;font-size:0.68rem;padding:4px 10px;border-radius:6px;border:1px solid #2e2820;background:transparent;color:#7a6e5e;cursor:pointer;white-space:nowrap';
+    btnOpen.onclick=function(e){e.stopPropagation();ovOpenPg(pg.id,pg.dati);};
+    var btnDel=document.createElement('button');btnDel.textContent='✕';btnDel.style.cssText='font-family:inherit;font-size:0.68rem;padding:4px 8px;border-radius:6px;border:1px solid #2e2820;background:transparent;color:#7a6e5e;cursor:pointer';
+    btnDel.onmouseenter=function(){this.style.borderColor='#8b2020';this.style.color='#8b2020';};btnDel.onmouseleave=function(){this.style.borderColor='#2e2820';this.style.color='#7a6e5e';};
+    btnDel.onclick=function(e){e.stopPropagation();ovAskDelete(pg.id,pg.nome);};
+    var actions=document.createElement('div');actions.style.cssText='display:flex;gap:6px';
+    actions.appendChild(btnOpen);actions.appendChild(btnDel);
+    card.appendChild(avatar);card.appendChild(info);card.appendChild(actions);grid.appendChild(card);
   });
 }
 
-// ── OPEN PG ──
-function ovOpenPg(id, dati) {
-  OV.pgId = id;
-  OV.cloudEnabled = true;
-
-  // Carica i dati nel localStorage E in D direttamente
-  if (dati && Object.keys(dati).length > 0) {
-    if (!dati.theme) dati.theme = 'dark';
-    if (!dati.modo) dati.modo = 'libera';
-    // Sovrascrivi D completamente con i dati del pg
-    D = dati;
-    localStorage.setItem('7sea', JSON.stringify(D));
+function ovOpenPg(id,dati){
+  OV.pgId=id;OV.cloudEnabled=true;
+  if(dati&&Object.keys(dati).length>0){
+    if(!dati.theme)dati.theme='dark';if(!dati.modo)dati.modo='libera';
+    D=dati;localStorage.setItem('7sea',JSON.stringify(D));
   } else {
-    // Nuovo pg vuoto: resetta D ai default
-    D = {theme:'dark',modo:'libera',
-      p:{giocatore:'',personaggio:'',concetto:'',nazione:'',fede:'',fama:'',background:'',
-         tratti:{Vigore:2,Grazia:2,Risolutezza:2,Acume:2,Panache:2},
-         abilita:{},vantaggi:[],arcani:[],storie:[],
-         pe:3,peMax:3,ric:0,ricMax:5,spSlot:20,dam:false,spFerite:[],immagine:''},
-      str:{tipo:'',tipoRef:'',tipiAttivi:[],nazione:'',note:''},
-      nave:{},mondo:[],npc:[],note:[]};
-    localStorage.setItem('7sea', JSON.stringify(D));
+    D={theme:'dark',modo:'libera',p:{giocatore:'',personaggio:'',concetto:'',nazione:'',fede:'',fama:'',background:'',tratti:{Vigore:2,Grazia:2,Risolutezza:2,Acume:2,Panache:2},abilita:{},vantaggi:[],arcani:[],storie:[],pe:3,peMax:3,ric:0,ricMax:5,spSlot:20,dam:false,spFerite:[],immagine:''},str:{tipo:'',tipoRef:'',tipiAttivi:[],nazione:'',note:''},nave:{},mondo:[],npc:[],note:[]};
+    localStorage.setItem('7sea',JSON.stringify(D));
   }
-
-  // Nascondi overlay, mostra app
-  document.getElementById('overlay').style.display = 'none';
-  var backBtn = document.getElementById('btn-back-pgs');
-  if (backBtn) backBtn.style.display = '';
-
-  // Inizializza (legge da D già settato)
-  try { init(); initBgNazioni(''); renderBgList(); } catch(e) { console.error('ovOpenPg init error:', e); }
+  var ov=document.getElementById('overlay');if(ov)ov.style.display='none';
+  var bb=document.getElementById('btn-back-pgs');if(bb)bb.style.display='';
+  try{init();initBgNazioni('');renderBgList();}catch(e){console.error('ovOpenPg init error:',e);}
 }
 
-// ── NEW PG ──
-async function ovNewPg() {
-  var defaultData = {
-    theme:'dark', modo:'libera',
-    p:{giocatore:'',personaggio:'Nuovo Personaggio',concetto:'',nazione:'',fede:'',fama:'',background:'',
-       tratti:{Vigore:2,Grazia:2,Risolutezza:2,Acume:2,Panache:2},
-       abilita:{},vantaggi:[],arcani:[],storie:[],
-       pe:3,peMax:3,ric:0,ricMax:5,spSlot:20,dam:false,
-       spFerite:[],immagine:''},
-    str:{tipo:'',tipoRef:'',nazione:'',note:''},
-    nave:{},mondo:[],npc:[],note:[]
-  };
-  var r = await sb.from('personaggi')
-    .insert({ user_id: OV.user.id, nome: 'Nuovo Personaggio', dati: defaultData })
-    .select().single();
-  if (r.error) { console.error(r.error); return; }
-  ovOpenPg(r.data.id, defaultData);
+async function ovNewPg(){
+  var defaultData={theme:'dark',modo:'libera',p:{giocatore:'',personaggio:'Nuovo Personaggio',concetto:'',nazione:'',fede:'',fama:'',background:'',tratti:{Vigore:2,Grazia:2,Risolutezza:2,Acume:2,Panache:2},abilita:{},vantaggi:[],arcani:[],storie:[],pe:3,peMax:3,ric:0,ricMax:5,spSlot:20,dam:false,spFerite:[],immagine:''},str:{tipo:'',tipoRef:'',tipiAttivi:[],nazione:'',note:''},nave:{},mondo:[],npc:[],note:[]};
+  var r=await sb.from('personaggi').insert({user_id:OV.user.id,nome:'Nuovo Personaggio',dati:defaultData}).select().single();
+  if(r.error){console.error(r.error);return;}
+  ovOpenPg(r.data.id,defaultData);
 }
 
-// ── DELETE ──
-function ovAskDelete(id, nome) {
-  OV.deleteId = id;
-  document.getElementById('ov-del-txt').textContent = 'Eliminare "'+nome+'"? Questa azione è irreversibile.';
-  document.getElementById('ov-modal-del').style.display = 'flex';
+function ovAskDelete(id,nome){
+  OV.deleteId=id;
+  var t=document.getElementById('ov-del-txt');if(t)t.textContent='Eliminare "'+nome+'"? Questa azione è irreversibile.';
+  var m=document.getElementById('ov-modal-del');if(m)m.style.display='flex';
 }
-function ovCloseDelModal() {
-  OV.deleteId = null;
-  document.getElementById('ov-modal-del').style.display = 'none';
+function ovCloseDelModal(){OV.deleteId=null;var m=document.getElementById('ov-modal-del');if(m)m.style.display='none';}
+async function ovConfirmDelete(){
+  if(!OV.deleteId)return;ovCloseDelModal();
+  await sb.from('personaggi').delete().eq('id',OV.deleteId);OV.deleteId=null;await ovShowPgList();
 }
-async function ovConfirmDelete() {
-  if (!OV.deleteId) return;
-  ovCloseDelModal();
-  await sb.from('personaggi').delete().eq('id', OV.deleteId);
-  OV.deleteId = null;
+
+async function ovShow(){
+  if(OV.cloudEnabled)await syncToCloud();
+  window._appInited=false;
+  var ov=document.getElementById('overlay');if(ov)ov.style.display='flex';
+  var bb=document.getElementById('btn-back-pgs');if(bb)bb.style.display='none';
   await ovShowPgList();
 }
 
-// ── TORNA ALLA LISTA ──
-async function ovShow() {
-  if (OV.cloudEnabled) {
-    // Sync immediatamente prima di tornare alla lista
-    // assicura che nome e dati siano aggiornati nel DB
-    await syncToCloud();
-  }
-  window._appInited = false;
-  document.getElementById('overlay').style.display = 'flex';
-  document.getElementById('btn-back-pgs').style.display = 'none';
-  await ovShowPgList();
-}
-
-// ── CLOUD SYNC ──
-async function syncToCloud() {
-  if (!OV.cloudEnabled || !OV.pgId) return;
+async function syncToCloud(){
+  if(!OV.cloudEnabled||!OV.pgId)return;
   clearTimeout(OV.saveTimer);
-  var nomePg = (D.p && D.p.personaggio) ? D.p.personaggio : 'Personaggio';
-  var r = await sb.from('personaggi')
-    .update({ dati: D, nome: nomePg, aggiornato_il: new Date().toISOString() })
-    .eq('id', OV.pgId);
-  if (r.error) console.error('Cloud sync error:', r.error);
+  var nomePg=(D.p&&D.p.personaggio)?D.p.personaggio:'Personaggio';
+  var r=await sb.from('personaggi').update({dati:D,nome:nomePg,aggiornato_il:new Date().toISOString()}).eq('id',OV.pgId);
+  if(r.error)console.error('Cloud sync error:',r.error);
 }
-
-
 
 // ── START OVERLAY ──
-(async function() {
-  try { await ovInit(); } catch(e) { console.error('ovInit error:', e); ovOffline(); }
-})();
+(async function(){try{await ovInit();}catch(e){console.error('ovInit error:',e);ovOffline();}})();
+
 </script>
 </body>
 </html>
