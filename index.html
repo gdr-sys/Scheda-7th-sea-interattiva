@@ -1300,6 +1300,14 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </div>
 
 <script>
+window.onerror=function(msg,src,l,c,err){
+  var b=document.getElementById('__errtop');
+  if(!b){b=document.createElement('div');b.id='__errtop';
+    b.style.cssText='position:fixed;top:48px;left:0;right:0;background:#c0392b;color:white;padding:8px;z-index:99999;font-family:monospace;font-size:11px;white-space:pre-wrap';
+    document.body.appendChild(b);}
+  b.textContent=(b.textContent||'')+'\n'+msg+' (riga '+l+' col '+c+')';
+  return false;
+};
 window.addEventListener('error',function(e){
   var b=document.getElementById('__err');
   if(!b){b=document.createElement('div');b.id='__err';
@@ -2172,9 +2180,9 @@ function init(){
   updateTabVis();
   // avatar
   if(D.p.avatar){document.getElementById('av-img').src=D.p.avatar;document.getElementById('av-img').style.display='block';document.getElementById('av-placeholder').style.display='none';document.getElementById('av-del').style.display='inline-block';}
-  document.getElementById('dam-toggle').classList.toggle('on',D.p.dam);
-  document.getElementById('themeToggle').classList.toggle('on',D.theme==='dark');
-  document.getElementById('sp-slot').value=D.p.spSlot||20;
+  var damEl=document.getElementById('dam-toggle');if(damEl)damEl.classList.toggle('on',D.p.dam);
+  var ttEl=document.getElementById('themeToggle');if(ttEl)ttEl.classList.toggle('on',D.theme==='dark');
+  var spSlotEl=document.getElementById('sp-slot');if(spSlotEl)spSlotEl.value=D.p.spSlot||20;
   updFeriteDisplay();
   syncThemeToggle();
   syncModo();
