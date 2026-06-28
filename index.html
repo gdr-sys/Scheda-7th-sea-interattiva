@@ -75,6 +75,11 @@ textarea.field-input{resize:vertical;min-height:80px}
 .combo-set.sum15{border-left-color:var(--crimson);background:rgba(139,26,26,0.07)}
 .combo-set.sum10{border-left-color:var(--gold);background:rgba(201,168,76,0.08)}
 .inc-badge{background:var(--text);color:var(--card);padding:2px 8px;border-radius:5px;font-size:0.78rem;font-weight:800;font-family:'Palatino Linotype','Book Antiqua',Palatino,serif}
+
+.pe-list-body{display:none;padding-top:8px}
+.pe-list-body.open{display:block}
+.pe-item{font-size:0.8rem;color:var(--text);padding:5px 0;border-bottom:1px solid var(--border);line-height:1.4}
+.pe-item:last-child{border-bottom:none}
 .waste-box{background:rgba(180,40,40,0.08);border-left:4px solid var(--crimson);padding:10px;border-radius:8px;color:var(--crimson);font-weight:700;margin-top:8px;font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;font-size:0.85rem}
 .dice-section-title{font-size:0.68rem;font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;color:var(--crimson);text-transform:uppercase;margin:18px 0 8px;letter-spacing:2px}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center}
@@ -345,6 +350,28 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
           <button class="ctrl-btn" onclick="changeRicMax(1)">+</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- LISTA RAPIDA PE -->
+  <div class="card">
+    <div class="sec-header" onclick="this.nextElementSibling.classList.toggle('open')" style="cursor:pointer;user-select:none">COME GUADAGNARE PE &#9660;</div>
+    <div class="pe-list-body">
+      <div style="font-size:0.7rem;letter-spacing:1px;color:var(--text-muted);font-family:var(--font-title);margin-bottom:8px">REGOLE BASE (1 PE ciascuno)</div>
+      <div class="pe-item">&#9670; Portare avanti la tua Storia (ogni sessione)</div>
+      <div class="pe-item">&#9670; Aiutare un altro personaggio con la sua Storia</div>
+      <div class="pe-item">&#9670; Azione particolarmente eroica o drammatica</div>
+      <div class="pe-item">&#9670; Superare una difficolt&#224; legata al tuo Difetto</div>
+      <div class="pe-item">&#9670; A discrezione del GM per gioco di ruolo eccellente</div>
+      <div style="font-size:0.7rem;letter-spacing:1px;color:var(--text-muted);font-family:var(--font-title);margin:10px 0 8px">CAPACIT&#192; SPECIALI</div>
+      <div class="pe-item">&#9733; <b>Arcano:</b> varia per arcano (vedi peculiarit&#224; dell'arcano)</div>
+      <div class="pe-item">&#9733; <b>Sorte:</b> rivelare la Trama attiva al momento giusto</div>
+      <div class="pe-item">&#9733; <b>Sanderis:</b> completare un patto col Dievas</div>
+      <div class="pe-item">&#9733; <b>Dar Matushki:</b> completare la lezione della Madre</div>
+      <div class="pe-item">&#9733; <b>Glamour:</b> usare un Glamour in modo memorabile</div>
+      <div class="pe-item">&#9733; <b>Porté:</b> aprire una Porta in modo creativo o rischioso</div>
+      <div class="pe-item">&#9733; <b>Hexenwerk:</b> usare un Unguento con conseguenze narrative</div>
+      <div class="pe-item" style="font-style:italic;color:var(--text-muted);font-size:0.75rem;margin-top:6px">Apri la scheda Arcani per le peculiarit&#224; specifiche di ogni arcano</div>
     </div>
   </div>
 
@@ -4072,10 +4099,17 @@ function renderBgChips(){
   if(!list.length){el.innerHTML='';return;}
   el.innerHTML=list.map(function(b,i){
     return '<div style="display:inline-flex;align-items:center;gap:4px;background:var(--card2);border:1px solid var(--gold);border-radius:20px;padding:3px 10px 3px 12px;font-size:0.72rem">'
-      +'<span style="color:var(--gold)">'+escH(b.nome)+'<\/span>'
+      +'<span style="color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="viewBgChip(\''+b.id+'\')" title="Vedi dettaglio">'+escH(b.nome)+'<\/span>'
       +'<button onclick="removeBgApplicato('+i+')" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;padding:0 2px;line-height:1">&#10005;<\/button>'
       +'<\/div>';
   }).join('');
+}
+function viewBgChip(id){
+  var b=BDB.find(function(x){return x.id===id;});
+  if(!b)return;
+  openBgModal();
+  // Pre-select this background in the modal
+  setTimeout(function(){selectBackground(b);},100);
 }
 function removeBgApplicato(i){
   if(!D.p.bgApplicati)return;
