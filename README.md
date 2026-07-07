@@ -1,22 +1,29 @@
-# 7th Sea Compendio
+# ⚓ Scheda 7th Sea Interattiva
 
-Scheda personaggio interattiva per **7th Sea 2ª Edizione**, con supporto a **Navigavia**. Un'unica pagina web, nessuna installazione richiesta, sincronizzazione cloud opzionale via account Google.
+A fast, private, and offline-ready digital character sheet for 7th Sea. Manage your characters, keep track of your traits and skills, and prepare for your next adventure—all locally within your browser.
 
-🔗 **[Apri la webapp](https://gdr-sys.github.io/Scheda-7th-sea-interattiva/)**
+## ✨ Features
 
-## Cosa include
+- **100% Local Storage**: Your character data stays in your browser. No servers, no tracking.
+- **Offline Access**: Fully functional without internet access, perfect for tabletop sessions.
+- **PWA Ready**: Installable as a native app on your mobile or desktop device.
+- **Data Portability**: Easily import and export your character data for backups or sharing.
+- **Distraction-Free**: A clean, intuitive design tailored for RPG gameplay.
 
-- Gestione completa del personaggio: tratti, abilità, vantaggi, arcani, background, storie
-- Database integrato di **125 vantaggi**, **90 arcani** e **115 background** (7th Sea + Navigavia), ricercabili e filtrabili
-- Selezione background con applicazione automatica di vantaggi e abilità collegate
-- Tutte le stregonerie di entrambi i manuali: Hexenwerk, Glamour, Porté, Dar Matushki, Sanderis, Sorte, Arcanance, Cantus Oceanico, Estirpe, Magia del Risveglio, Mo'uo, Sentiero del Sognatore, Tocco di Baba Yaga — selezionabili anche in combinazione in modalità libera
-- Spirale della Morte interattiva, con modalità Classica e Hardcore
-- Gestione nave, equipaggio, mondo, PNG e note di campagna
-- Lanciatore di dadi integrato con esplosione del 10, dadi bonus, Gioia di Vivere, Lupo di Mare, Fuoco di Sbarramento e altre opzioni avanzate
-- Modalità Creazione PG con limiti automatici (abilità a grado 3, vantaggi riservati alla creazione, max 2 background)
-- Tema chiaro/scuro
+## 🚀 How to use
 
-## Salvataggio dati
+1. **Online**: [Open the live demo](https://gdr-sys.github.io/Scheda-7th-sea-interattiva/)
+2. **Offline**: 
+   - Clone this repository or download the `index.html`.
+   - Open the file in any modern web browser.
+   - Start creating your 7th Sea character!
 
-- **Con account Google**: i personaggi vengono salvati su cloud (Supabase) e sono accessibili da qualsiasi dispositivo
-- **Senza account**: i dati restano salvati localmente nel browser
+## 🛠 Tech Stack
+
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6+)
+- **Storage**: IndexedDB & LocalStorage
+- **Offline**: Service Workers (PWA)
+
+## 📄 License
+
+MIT
